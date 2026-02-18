@@ -36,6 +36,3 @@ det-group-project/
 
 _Add branch conventions, workflow notes, etc. here._
 
-## License
-
-_TBD_
