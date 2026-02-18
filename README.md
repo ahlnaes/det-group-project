@@ -6,10 +6,6 @@
 
 ## Team
 
-| Name | Role |
-|------|------|
-|      |      |
-
 ## Project Structure
 
 ```
@@ -34,5 +30,6 @@ det-group-project/
 
 ## Development
 
-_Add branch conventions, workflow notes, etc. here._
+   - Branches exist for each member, feel free to use or ignore.
+   - Plz create a new folder for software specific things, like if you wanna do something in for example Blender -> create a folder called blender so that you can add software specific gitignore to that folder.
 
