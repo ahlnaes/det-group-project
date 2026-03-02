@@ -33,7 +33,7 @@ public class AudioAnalyser : MonoBehaviour
 
         //calculate window coefficients
         //Hann formula: https://en.wikipedia.org/wiki/Hann_function
-        for (int i = 0; i < FFTSize; i++)
+        for (var i = 0; i < FFTSize; i++)
         {
             _windowCoefficients[i] = 0.5f * (1f - Mathf.Cos(2f * Mathf.PI * i / (FFTSize - 1)));
         }
@@ -42,16 +42,26 @@ public class AudioAnalyser : MonoBehaviour
     // Unity calls OnAudioFilterRead on the DSP thread every time anew audio buffer is ready to process
     private void OnAudioFilterRead(float[] data, int channels)
     {
-        float sum = 0;
-        for (int i = 0; i < data.Length; i += channels)
+        for (var i = 0; i < data.Length; i += channels)
         {
             _accumulationBuffer[_accumulationPos] = data[i];
             _accumulationPos++;
-            sum += data[i] * data[i];
-            if (_accumulationPos < FFTSize)
+        }
+        
+        float sum = 0;
+        if (_accumulationPos >= FFTSize)
+        {
+            for (var i = 0; i < FFTSize; i++)
             {
-                return;
+                _windowedBuffer[i] = _accumulationBuffer[i] * _windowCoefficients[i];
             }
+
+            for (var i = 0; i < FFTSize; i++)
+            {
+                sum += _accumulationBuffer[i] * _accumulationBuffer[i];
+            }
+            _rms = Mathf.Sqrt(sum / FFTSize);
+            _accumulationPos = 0;
         }
     }
     
