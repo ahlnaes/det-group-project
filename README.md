@@ -3,9 +3,6 @@
 
 
 ## Overview
-
-> _Brief description of the project goes here._
-
 ## Team
 
 ## Project Structure
@@ -13,6 +10,7 @@
 ```
 det-group-project/
 ├── unity/           # Unity project
+├── blender/         # Blender files
 ├── inspo/           # Textfil för inspirationslänkar etc
 ├── docs/            # PDFer från föreläsningar etc
 └── README.md
@@ -22,7 +20,7 @@ det-group-project/
 
 ### Prerequisites
 
-- Unity `<version>`
+- Unity `<6000.3.0f1>`
 
 ### Setup
 
