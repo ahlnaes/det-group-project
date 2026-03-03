@@ -6,13 +6,14 @@ public class AudioAnalyser : MonoBehaviour
     private const int FFTSize = 1024;
     private const int BANDCOUNT = 8;
     
+    //arrays since list is too slow for this
     private float[] 
         _accumulationBuffer, 
         _windowCoefficients, 
         _windowedBuffer, 
         _frontBuffer, 
         _backBuffer;
-
+    
     private int 
         _accumulationPos, 
         _backBufferIndex;
@@ -51,11 +52,13 @@ public class AudioAnalyser : MonoBehaviour
         float sum = 0;
         if (_accumulationPos >= FFTSize)
         {
+            //window function - reduces transients if audio phase isn't exactly FFTSize
             for (var i = 0; i < FFTSize; i++)
             {
                 _windowedBuffer[i] = _accumulationBuffer[i] * _windowCoefficients[i];
             }
 
+            // sum for rms (root mean square)
             for (var i = 0; i < FFTSize; i++)
             {
                 sum += _accumulationBuffer[i] * _accumulationBuffer[i];
