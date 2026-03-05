@@ -8,46 +8,68 @@ public class AudioAnalyser : MonoBehaviour
     private const int BandCount  = 8;
     private const int SampleRate = 48000;
 
-    // Audio buffers (DSP thread only)
-    private float[]
-        _accumulationBuffer,
-        _windowCoefficients,
-        _windowedBuffer;
+    // ── DSP thread buffers (never touched by main thread) ─────────────────
+    private float[] _accumulationBuffer, _windowCoefficients, _windowedBuffer;
+    private double[] _fftReal, _fftImag, _spectrum;
+    private int _accumulationPos;
 
-    // FFT buffers (DSP thread only)
-    private double[]
-        _fftReal,
-        _fftImag,
-        _spectrum;  // magnitude, length FFTSize / 2
-
-    // Double buffer for band energies (written DSP, read main thread)
-    private float[] _frontBuffer, _backBuffer;
-
-    private int  _accumulationPos;
+    // ── Thread-safe output from DSP thread ────────────────────────────────
+    // _rms: volatile float — safe for single primitive cross-thread reads
+    // Bands: double-buffered array — swapped atomically via Interlocked.Exchange
+    private float[] _backBuffer;
     private volatile float _rms;
 
-    // Public accessors for main thread consumers (shaders, VFX, etc.)
-    public float RMS => _rms;
-    public float[] Bands => _frontBuffer;
-    
-    // ── Kick envelope ─────────────────────────────────────────────────────────
-// Triggers on sharp bass transients and decays back to zero between hits.
-// This is what drives displacement in the shader — spikes on kicks,
-// returns to zero between them.
+    public float   RMS  => _rms;
+    public float[] Bands { get; private set; }
 
+    // ── Kick envelope ──────────────────────────────────────────────────────
+    // Triggers on sharp bass transients, decays between hits.
+    // Reference: Bello et al. (2005) https://doi.org/10.1109/MSP.2005.1511798
     [Header("Kick Envelope")]
-    [SerializeField] private float _kickThreshold   = 0.02f;  // band1 value that counts as a kick
-    [SerializeField] private float _kickAttack      = 0.95f;  // how instantly envelope jumps (0-1, higher = faster)
-    [SerializeField] private float _kickRelease     = 0.05f;  // how fast it decays per frame (lower = slower decay)
+    [SerializeField] private float _kickThreshold = 0.02f;
+    [SerializeField] private float _kickAttack    = 0.95f;
+    [SerializeField] private float _kickRelease   = 0.05f;
 
-    private float _kickEnvelope    = 0.0f;
-    private float _previousBand1   = 0.0f;
+    private float _kickEnvelope;
+    private float _previousBand1;
 
     public float KickEnvelope => _kickEnvelope;
 
+    // ── Transient envelope ─────────────────────────────────────────────────
+    // Broadband onset — catches snares, claps, crashes across all bands.
+    [Header("Transient Envelope")]
+    [SerializeField] private float _transientThreshold = 0.05f;
+    [SerializeField] private float _transientAttack    = 0.9f;
+    [SerializeField] private float _transientRelease   = 0.08f;
+
+    private float _transientEnvelope;
+
+    public float TransientEnvelope => _transientEnvelope;
+
+    // ── Smoothed band energies ─────────────────────────────────────────────
+    // Asymmetric EMA — fast attack, slow release.
+    // Reference: Zölzer (2008), Digital Audio Signal Processing, Ch. 4
+    [Header("Band Energy Smoothing")]
+    [SerializeField] private float _energyAttack  = 0.8f;
+    [SerializeField] private float _energyRelease = 0.15f;
+
+    private float   _bassEnergy;
+    private float   _midEnergy;
+    private float   _hiEnergy;
+    private float   _spectralFlux;
+    private float[] _previousBands;
+    
+    // ── Scan phase accumulator ─────────────────────────────────────────────────
+    // Integrated in Update() so speed changes affect rate of change, not position.
+    // Equivalent to a Speed CHOP in TouchDesigner.
+    [Header("Scan Lines")]
+    [SerializeField] private float _scanBaseSpeed  = 0.3f;
+    [SerializeField] private float _scanSpeedScale = 1.0f;
+
+    private float _scanPhase;
+
     private void Awake()
     {
-        // DSP thread buffers
         _accumulationBuffer = new float[FFTSize];
         _windowCoefficients = new float[FFTSize];
         _windowedBuffer     = new float[FFTSize];
@@ -55,20 +77,18 @@ public class AudioAnalyser : MonoBehaviour
         _fftImag            = new double[FFTSize];
         _spectrum           = new double[FFTSize / 2];
 
-        // Double buffer - sized to band count, not FFTSize
-        _frontBuffer = new float[BandCount];
+        Bands        = new float[BandCount];
         _backBuffer  = new float[BandCount];
+        _previousBands = new float[BandCount];
 
         // Pre-compute Hann window coefficients once
-        // Hann formula: https://en.wikipedia.org/wiki/Hann_function
+        // https://en.wikipedia.org/wiki/Hann_function
         for (var i = 0; i < FFTSize; i++)
             _windowCoefficients[i] = 0.5f * (1f - Mathf.Cos(2f * Mathf.PI * i / (FFTSize - 1)));
     }
 
-    // Called by Unity on the DSP thread every time a new audio buffer is ready
     private void OnAudioFilterRead(float[] data, int channels)
     {
-        // Accumulate mono samples (left channel only) until we have FFTSize samples
         for (var i = 0; i < data.Length; i += channels)
         {
             _accumulationBuffer[_accumulationPos] = data[i];
@@ -77,52 +97,39 @@ public class AudioAnalyser : MonoBehaviour
 
         if (_accumulationPos < FFTSize) return;
 
-        // --- Buffer is full: process this frame ---
-
-        // 1. RMS on raw audio (before windowing — windowing would skew the energy)
+        // RMS — calculated before windowing to avoid energy skew
         float sum = 0;
         for (var i = 0; i < FFTSize; i++)
             sum += _accumulationBuffer[i] * _accumulationBuffer[i];
-        _rms = Mathf.Sqrt(sum / FFTSize);  // volatile write, safe for single primitive
+        _rms = Mathf.Sqrt(sum / FFTSize);
 
-        // 2. Apply Hann window and copy to FFT input buffers
-        //    _fftImag must be zeroed each frame — we're feeding real-valued audio
+        // Apply Hann window and copy to FFT input
         for (var i = 0; i < FFTSize; i++)
         {
             _fftReal[i] = _accumulationBuffer[i] * _windowCoefficients[i];
             _fftImag[i] = 0.0;
         }
 
-        // 3. In-place FFT — no allocations
         FFT.Forward(_fftReal, _fftImag);
 
-        // 4. Compute magnitude spectrum for the positive frequencies only
-        //    FFT output is symmetric: only bins 0.N/2 carry unique information
-        //    Magnitude: sqrt(real² + imag²), normalised by FFTSize
-        //    Reference: Harris (1978) - On the use of windows for harmonic analysis
-        //    https://doi.org/10.1109/PROC.1978.10837
+        // Magnitude spectrum — positive frequencies only
+        // Reference: Harris (1978) https://doi.org/10.1109/PROC.1978.10837
         for (var i = 0; i < FFTSize / 2; i++)
             _spectrum[i] = Math.Sqrt(_fftReal[i] * _fftReal[i] + _fftImag[i] * _fftImag[i]) / FFTSize;
 
-        // 5. Bin spectrum into frequency bands using logarithmic spacing
-        //    Log spacing mirrors human pitch perception (equal spacing = equal octaves)
-        //    Frequency of bin i = i * SampleRate / FFTSize
-        //    We map FFTSize/2 bins into BandCount bands on a log scale from 20Hz to Nyquist
-        float minFreq = 20f;
-        float maxFreq = SampleRate / 2f;  // Nyquist
+        // Log-frequency band binning
+        var minFreq = 20f;
+        var maxFreq = SampleRate / 2f;
         for (var b = 0; b < BandCount; b++)
         {
-            // Exponential interpolation between minFreq and maxFreq
-            float freqLow  = minFreq * Mathf.Pow(maxFreq / minFreq, (float)b       / BandCount);
-            float freqHigh = minFreq * Mathf.Pow(maxFreq / minFreq, (float)(b + 1) / BandCount);
+            var freqLow  = minFreq * Mathf.Pow(maxFreq / minFreq, (float)b       / BandCount);
+            var freqHigh = minFreq * Mathf.Pow(maxFreq / minFreq, (float)(b + 1) / BandCount);
 
-            // Convert frequency range to FFT bin indices
-            int binLow  = Mathf.Clamp(Mathf.RoundToInt(freqLow  * FFTSize / SampleRate), 0, FFTSize / 2 - 1);
-            int binHigh = Mathf.Clamp(Mathf.RoundToInt(freqHigh * FFTSize / SampleRate), 0, FFTSize / 2 - 1);
+            var binLow  = Mathf.Clamp(Mathf.RoundToInt(freqLow  * FFTSize / SampleRate), 0, FFTSize / 2 - 1);
+            var binHigh = Mathf.Clamp(Mathf.RoundToInt(freqHigh * FFTSize / SampleRate), 0, FFTSize / 2 - 1);
 
-            // Average magnitude across bins in this band
             double bandSum = 0;
-            int    count   = 0;
+            var    count   = 0;
             for (var i = binLow; i <= binHigh; i++)
             {
                 bandSum += _spectrum[i];
@@ -131,46 +138,81 @@ public class AudioAnalyser : MonoBehaviour
             _backBuffer[b] = count > 0 ? (float)(bandSum / count) : 0f;
         }
 
-        // 6. Atomic buffer swap — main thread always reads a complete frame
-        //    Interlocked.Exchange swaps the reference in a single CPU instruction,
-        //    preventing the main thread from ever reading a half-written buffer
-        _frontBuffer = Interlocked.Exchange(ref _backBuffer, _frontBuffer);
-
+        // Atomic buffer swap
+        Bands = Interlocked.Exchange(ref _backBuffer, Bands);
         _accumulationPos = 0;
     }
 
-    // Called on the main thread every frame — push data to shader globals
     private void Update()
     {
-        
-        Debug.Log($"RMS: {_rms:F4}  Band1: {_frontBuffer[1]:F6}  Kick: {_kickEnvelope:F4}");
-        // _frontBuffer is safe to read here after the atomic swap
+        // Push raw values to GPU
         Shader.SetGlobalFloat("_RMS", _rms);
         for (var i = 0; i < BandCount; i++)
-            Shader.SetGlobalFloat($"_Band{i}", _frontBuffer[i]);
-        
-        // ── Kick detection and envelope ───────────────────────────────────────────
-// Onset detection: a kick is a sudden *increase* in band1 that crosses
-// the threshold. Comparing to previous frame catches the transient.
-// Reference: Bello et al. (2005) https://doi.org/10.1109/MSP.2005.1511798
-        float currentBand1  = _frontBuffer[1];
-        float band1Delta    = currentBand1 - _previousBand1;
-        bool  kickDetected  = band1Delta > _kickThreshold && currentBand1 > 0.02f;
+            Shader.SetGlobalFloat($"_Band{i}", Bands[i]);
 
-        if (kickDetected)
+        // ── Smoothed band energies ─────────────────────────────────────────
+        var rawBass = (Bands[0] + Bands[1]) / 2f;
+        var rawMid  = (Bands[2] + Bands[3] + Bands[4]) / 3f;
+        var rawHi   = (Bands[5] + Bands[6] + Bands[7]) / 3f;
+
+        _bassEnergy = rawBass > _bassEnergy
+            ? Mathf.Lerp(_bassEnergy, rawBass, _energyAttack)
+            : Mathf.Lerp(_bassEnergy, rawBass, _energyRelease);
+
+        _midEnergy = rawMid > _midEnergy
+            ? Mathf.Lerp(_midEnergy, rawMid, _energyAttack)
+            : Mathf.Lerp(_midEnergy, rawMid, _energyRelease);
+
+        _hiEnergy = rawHi > _hiEnergy
+            ? Mathf.Lerp(_hiEnergy, rawHi, _energyAttack)
+            : Mathf.Lerp(_hiEnergy, rawHi, _energyRelease);
+
+        Shader.SetGlobalFloat("_BassEnergy", _bassEnergy);
+        Shader.SetGlobalFloat("_MidEnergy",  _midEnergy);
+        Shader.SetGlobalFloat("_HiEnergy",   _hiEnergy);
+
+        // ── Spectral flux + transient delta (shared loop) ─────────────────
+        // Both need per-band deltas from the previous frame — compute once,
+        // update _previousBands after both reads to avoid stale values.
+        float flux       = 0f;
+        float totalDelta = 0f;
+        for (var i = 0; i < BandCount; i++)
         {
-            // Sharp attack — envelope jumps toward 1 instantly
-            _kickEnvelope = Mathf.Lerp(_kickEnvelope, 1.0f, _kickAttack);
+            float delta = Bands[i] - _previousBands[i];
+            if (delta > 0f)
+            {
+                flux       += delta;
+                totalDelta += delta;
+            }
+            _previousBands[i] = Bands[i];
         }
-        else
-        {
-            // Exponential decay back to zero between hits
-            // Multiplying by (1 - release) each frame gives a smooth tail
-            _kickEnvelope *= (1.0f - _kickRelease);
-        }
+
+        _spectralFlux = flux;
+        Shader.SetGlobalFloat("_SpectralFlux", _spectralFlux);
+
+        // ── Kick envelope ──────────────────────────────────────────────────
+        float currentBand1 = Bands[1];
+        float band1Delta   = currentBand1 - _previousBand1;
+        bool  kickDetected = band1Delta > _kickThreshold && currentBand1 > 0.02f;
+
+        _kickEnvelope = kickDetected
+            ? Mathf.Lerp(_kickEnvelope, 1.0f, _kickAttack)
+            : _kickEnvelope * (1.0f - _kickRelease);
 
         _previousBand1 = currentBand1;
-
         Shader.SetGlobalFloat("_KickEnvelope", _kickEnvelope);
+
+        // ── Transient envelope ─────────────────────────────────────────────
+        _transientEnvelope = totalDelta > _transientThreshold
+            ? Mathf.Lerp(_transientEnvelope, 1.0f, _transientAttack)
+            : _transientEnvelope * (1.0f - _transientRelease);
+
+        Shader.SetGlobalFloat("_TransientEnvelope", _transientEnvelope);
+        
+        // ── Scan phase ─────────────────────────────────────────────────────────────
+        float shapedEnergy = Mathf.Pow(_bassEnergy, 0.5f);
+        float scanSpeed = _scanBaseSpeed + shapedEnergy * _scanSpeedScale;
+        _scanPhase += scanSpeed * Time.deltaTime;  // ← this line is missing
+        Shader.SetGlobalFloat("_ScanPhase", _scanPhase);
     }
 }

@@ -311,6 +311,13 @@ MonoBehaviour:
   _kickThreshold: 0.02
   _kickAttack: 0.95
   _kickRelease: 0.05
+  _transientThreshold: 0.05
+  _transientAttack: 0.9
+  _transientRelease: 0.08
+  _energyAttack: 0.8
+  _energyRelease: 0.15
+  _scanBaseSpeed: 0.02
+  _scanSpeedScale: 1
 --- !u!82 &796807672
 AudioSource:
   m_ObjectHideFlags: 0

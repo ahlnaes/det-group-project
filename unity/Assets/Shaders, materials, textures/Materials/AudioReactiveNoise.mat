@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: AudioReactiveNoise
-  m_Shader: {fileID: -6465566751694194690, guid: 567d3878eb8cbf54880acb609186a75a, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 22b3aff5f7eee7f4dba3190479d45163, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -46,16 +46,26 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BaseSpeed: -27.58
+    - _Brightness: 6.9
     - _CellScale: 2.62
     - _DispStrength: 1.19
     - _EdgeBrightness: 1.2
     - _EffectStrenght: 8.97
     - _EffectStrength: 0.6
+    - _GlitchAmount: -0.43
+    - _GlowAmount: 0.03
     - _GlowStrength: 0.25
+    - _LineScale: 0.26
+    - _LineWidth: 0.01
     - _NoiseScale: 2.25
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _TimeScale: 0.6
+    - _ScanPhase: -0.82
+    - _SliceCount: 0.43
+    - _SpeedScale: -40
+    - _TimeScale: 1.24
+    - _WallHeight: 0
     - _XRMotionVectorsPass: 1
     m_Colors:
     - _AccentColor: {r: 1, g: 0, b: 0, a: 1}
