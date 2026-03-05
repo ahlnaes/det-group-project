@@ -5867,9 +5867,8 @@ MonoBehaviour:
   globeVisual: {fileID: 1375737371}
   leftHand: {fileID: 426643763}
   rightHand: {fileID: 1069021327}
-  rotationSpeed: 400
+  rotationSpeed: 200
   inertiaDamping: 3
-  maxVerticalAngle: 80
 --- !u!1 &1411046641
 GameObject:
   m_ObjectHideFlags: 0
