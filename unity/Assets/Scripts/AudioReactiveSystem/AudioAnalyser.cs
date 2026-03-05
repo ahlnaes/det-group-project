@@ -29,6 +29,21 @@ public class AudioAnalyser : MonoBehaviour
     // Public accessors for main thread consumers (shaders, VFX, etc.)
     public float RMS => _rms;
     public float[] Bands => _frontBuffer;
+    
+    // ── Kick envelope ─────────────────────────────────────────────────────────
+// Triggers on sharp bass transients and decays back to zero between hits.
+// This is what drives displacement in the shader — spikes on kicks,
+// returns to zero between them.
+
+    [Header("Kick Envelope")]
+    [SerializeField] private float _kickThreshold   = 0.02f;  // band1 value that counts as a kick
+    [SerializeField] private float _kickAttack      = 0.95f;  // how instantly envelope jumps (0-1, higher = faster)
+    [SerializeField] private float _kickRelease     = 0.05f;  // how fast it decays per frame (lower = slower decay)
+
+    private float _kickEnvelope    = 0.0f;
+    private float _previousBand1   = 0.0f;
+
+    public float KickEnvelope => _kickEnvelope;
 
     private void Awake()
     {
@@ -127,9 +142,35 @@ public class AudioAnalyser : MonoBehaviour
     // Called on the main thread every frame — push data to shader globals
     private void Update()
     {
+        
+        Debug.Log($"RMS: {_rms:F4}  Band1: {_frontBuffer[1]:F6}  Kick: {_kickEnvelope:F4}");
         // _frontBuffer is safe to read here after the atomic swap
         Shader.SetGlobalFloat("_RMS", _rms);
         for (var i = 0; i < BandCount; i++)
             Shader.SetGlobalFloat($"_Band{i}", _frontBuffer[i]);
+        
+        // ── Kick detection and envelope ───────────────────────────────────────────
+// Onset detection: a kick is a sudden *increase* in band1 that crosses
+// the threshold. Comparing to previous frame catches the transient.
+// Reference: Bello et al. (2005) https://doi.org/10.1109/MSP.2005.1511798
+        float currentBand1  = _frontBuffer[1];
+        float band1Delta    = currentBand1 - _previousBand1;
+        bool  kickDetected  = band1Delta > _kickThreshold && currentBand1 > 0.02f;
+
+        if (kickDetected)
+        {
+            // Sharp attack — envelope jumps toward 1 instantly
+            _kickEnvelope = Mathf.Lerp(_kickEnvelope, 1.0f, _kickAttack);
+        }
+        else
+        {
+            // Exponential decay back to zero between hits
+            // Multiplying by (1 - release) each frame gives a smooth tail
+            _kickEnvelope *= (1.0f - _kickRelease);
+        }
+
+        _previousBand1 = currentBand1;
+
+        Shader.SetGlobalFloat("_KickEnvelope", _kickEnvelope);
     }
 }

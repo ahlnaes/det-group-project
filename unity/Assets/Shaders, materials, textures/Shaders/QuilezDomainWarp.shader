@@ -1,173 +1,195 @@
-Shader "Custom/AudioReactiveNoise"
+Shader "Custom/AudioReactiveCellularOverlay"
 {
     Properties
     {
-        _BaseColor ("Base Color", Color) = (0.05, 0.05, 0.15, 1)
-        _AccentColor ("Accent Color", Color) = (0.2, 0.6, 1.0, 1)
-        _NoiseScale ("Noise Scale", Float) = 3.0
-        _DispStrength ("Displacement Strength", Float) = 0.4
-        _TimeScale ("Time Scale", Float) = 0.3
+        _MainTex        ("Wall Texture",    2D)           = "white" {}
+        _AccentColor    ("Accent Color",    Color)        = (0.1, 0.6, 1.0, 1)
+        _CellScale      ("Cell Scale",      Float)        = 1.0
+        _TimeScale      ("Time Scale",      Float)        = 0.2
+        _EffectStrength ("Effect Strength", Range(0, 1))  = 0.4
+        _EdgeBrightness ("Edge Brightness", Range(0, 3))  = 1.2
     }
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
+        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" }
 
         Pass
         {
-            CGPROGRAM
-            #pragma vertex vert
+            Name "ForwardLit"
+            Tags { "LightMode" = "UniversalForward" }
+
+            HLSLPROGRAM
+            #pragma vertex   vert
             #pragma fragment frag
-            #include "UnityCG.cginc"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            // ── Audio globals set by AudioAnalyser.Update() ──────────────────
+            // ── Audio globals set by AudioAnalyser.Update() ──────────────
             float _RMS;
-            float _Band0;   // sub-bass
-            float _Band1;   // bass
-            float _Band2;   // low-mid
-            float _Band3;   // mid
-            float _Band4;   // upper-mid
-            float _Band5;   // presence
-            float _Band6;   // brilliance
-            float _Band7;   // air
+            float _Band0, _Band1, _Band2, _Band3;
+            float _Band4, _Band5, _Band6, _Band7;
 
-            // ── Material properties ──────────────────────────────────────────
-            fixed4  _BaseColor;
-            fixed4  _AccentColor;
-            float   _NoiseScale;
-            float   _DispStrength;
-            float   _TimeScale;
+            // ── Material properties ──────────────────────────────────────
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+            float4 _MainTex_ST;
 
-            struct appdata
+            float4 _AccentColor;
+            float  _CellScale;
+            float  _TimeScale;
+            float  _EffectStrength;
+            float  _EdgeBrightness;
+
+            struct Attributes
             {
-                float4 vertex : POSITION;
-                float2 uv     : TEXCOORD0;
+                float4 positionOS : POSITION;
+                float2 uv         : TEXCOORD0;
             };
 
-            struct v2f
+            struct Varyings
             {
-                float4 pos : SV_POSITION;
-                float2 uv  : TEXCOORD0;
+                float4 positionHCS : SV_POSITION;
+                float2 uv          : TEXCOORD0;  // for wall texture sampling
+                float3 positionWS  : TEXCOORD1;  // world position for seamless noise
             };
 
-            // ── Value noise ──────────────────────────────────────────────────
-            // Hash: maps a 2D coordinate to a pseudo-random float
-            // Based on: https://www.shadertoy.com/view/4dS3Wd (Morgan McGuire)
-            float hash(float2 p)
+            // ── Voronoi helpers ──────────────────────────────────────────
+            float2 cellHash(float2 p)
+            {
+                p = float2(dot(p, float2(127.1, 311.7)),
+                           dot(p, float2(269.5, 183.3)));
+                return frac(sin(p) * 43758.5453);
+            }
+
+            // Worley (1996) "A cellular texture basis function"
+            // https://dl.acm.org/doi/10.1145/237170.237267
+            float voronoi(float2 uv, float t, float audioSpeed, float audioPull)
+            {
+                float2 cell    = floor(uv);
+                float2 local   = frac(uv);
+                float  minDist = 8.0;
+
+                for (int y = -1; y <= 1; y++)
+                {
+                    for (int x = -1; x <= 1; x++)
+                    {
+                        float2 neighbour    = float2(x, y);
+                        float2 h            = cellHash(cell + neighbour);
+                        float2 featurePoint = 0.5 + 0.5 * sin(t * audioSpeed + 6.28 * h);
+                        featurePoint        = lerp(featurePoint, round(featurePoint), audioPull);
+                        float2 diff         = neighbour + featurePoint - local;
+                        float  d            = dot(diff, diff);
+                        minDist             = min(minDist, d);
+                    }
+                }
+                return sqrt(minDist);
+            }
+
+            float hash11(float2 p)
             {
                 p = frac(p * float2(234.34, 435.345));
                 p += dot(p, p + 34.23);
                 return frac(p.x * p.y);
             }
 
-            // Smooth value noise — bilinear interpolation between hashed corners
-            // Returns values in [0, 1]
-            float noise(float2 p)
+            // ── Vertex ───────────────────────────────────────────────────
+            Varyings vert(Attributes IN)
             {
-                float2 i = floor(p);
-                float2 f = frac(p);
+                Varyings OUT;
+                OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+                OUT.uv          = TRANSFORM_TEX(IN.uv, _MainTex);
 
-                // Smoothstep for C1 continuity (no gradient discontinuities at cell edges)
-                float2 u = f * f * (3.0 - 2.0 * f);
-
-                float a = hash(i);
-                float b = hash(i + float2(1, 0));
-                float c = hash(i + float2(0, 1));
-                float d = hash(i + float2(1, 1));
-
-                return lerp(lerp(a, b, u.x),
-                            lerp(c, d, u.x), u.y);
+                // World position passed to fragment so noise is sampled
+                // in world space — eliminates seams at mesh boundaries
+                OUT.positionWS  = TransformObjectToWorld(IN.positionOS.xyz);
+                return OUT;
             }
 
-            // ── Fractional Brownian Motion ───────────────────────────────────
-            // Sums multiple octaves of noise at increasing frequency and
-            // decreasing amplitude. Each octave adds finer detail.
-            // Reference: Musgrave (1994), "Texturing and Modelling: A Procedural Approach"
-            // https://iquilezles.org/articles/fbm/
-            float fbm(float2 p, int octaves, float persistence)
+            // ── Fragment ─────────────────────────────────────────────────
+            float4 frag(Varyings IN) : SV_Target
             {
-                float value    = 0.0;
-                float amplitude = 0.5;
-                float frequency = 1.0;
+                // ── Wall texture ─────────────────────────────────────────
+                float4 wallCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
 
-                for (int o = 0; o < octaves; o++)
-                {
-                    value     += amplitude * noise(p * frequency);
-                    frequency *= 2.0;
-                    amplitude *= persistence;
-                }
-                return value;
-            }
+                // ── Audio ────────────────────────────────────────────────
+                float bass   = _Band1 * 200.0;
+                float lowMid = _Band2 * 200.0;
+                float mid    = _Band3 * 200.0;
+                float hi     = _Band6 * 200.0;
+                float rms    = _RMS   * 5.0;
 
-            // ── Vertex shader ────────────────────────────────────────────────
-            v2f vert(appdata v)
-            {
-                v2f o;
+                float t = _Time.y * _TimeScale;
 
-                // RMS drives vertical displacement of vertices
-                // Bass band adds a low-frequency pulse on top
-                float rmsScaled  = _RMS * 5.0;
-                float bassScaled = _Band1 * 200.0;
+                // ── World-space noise coordinates ────────────────────────
+                // XZ plane for floor-facing projection, XY for walls.
+                // Blend both so the shader works on any surface orientation
+                // without seams regardless of which way the face points.
+                float2 worldXZ = IN.positionWS.xz * _CellScale;
+                float2 worldXY = IN.positionWS.xy * _CellScale;
+                float2 worldYZ = IN.positionWS.yz * _CellScale;
 
-                float2 uv       = v.uv * _NoiseScale;
-                float  t        = _Time.y * _TimeScale * (1.0 + rmsScaled);
+                // Derive blend weights from the surface normal direction.
+                // We approximate this from the rate of change of world pos —
+                // a flat upward surface varies more in XZ, a wall more in XY/YZ.
+                float3 dpdx   = ddx(IN.positionWS);
+                float3 dpdy   = ddy(IN.positionWS);
+                float3 normal = abs(normalize(cross(dpdx, dpdy)));
 
-                // Sample noise for displacement — animated by time + RMS speed
-                float disp = fbm(uv + float2(t * 0.4, t * 0.3), 3, 0.5);
+                // normal.y ~ 1 means floor/ceiling, normal.x/z ~ 1 means wall
+                float  blendXZ = normal.y;
+                float  blendXY = normal.z;
+                float  blendYZ = normal.x;
 
-                // Bass pushes the geometry up in a wave
-                v.vertex.y += disp * _DispStrength * (1.0 + rmsScaled)
-                            + sin(v.uv.x * 6.28 + t * 2.0) * bassScaled * 0.01;
+                // ── Voronoi layers ───────────────────────────────────────
+                // Layer 1 — large cells, bass driven
+                float v1XZ = voronoi(worldXZ,             t, 1.0 + rms, bass * 0.6);
+                float v1XY = voronoi(worldXY,             t, 1.0 + rms, bass * 0.6);
+                float v1YZ = voronoi(worldYZ,             t, 1.0 + rms, bass * 0.6);
+                float v1   = v1XZ * blendXZ + v1XY * blendXY + v1YZ * blendYZ;
 
-                o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv  = v.uv;
-                return o;
-            }
+                // Layer 2 — medium cells, mid driven
+                float v2XZ = voronoi(worldXZ * 2.3 + float2(3.7, 1.4), t * 1.3, 1.2 + mid, lowMid * 0.4);
+                float v2XY = voronoi(worldXY * 2.3 + float2(3.7, 1.4), t * 1.3, 1.2 + mid, lowMid * 0.4);
+                float v2YZ = voronoi(worldYZ * 2.3 + float2(3.7, 1.4), t * 1.3, 1.2 + mid, lowMid * 0.4);
+                float v2   = v2XZ * blendXZ + v2XY * blendXY + v2YZ * blendYZ;
 
-            // ── Fragment shader ──────────────────────────────────────────────
-            fixed4 frag(v2f i) : SV_Target
-            {
-                float2 uv = i.uv * _NoiseScale;
-                float  t  = _Time.y * _TimeScale * (1.0 + _RMS * 5.0);
+                // Layer 3 — fine cells, hi driven
+                float v3XZ = voronoi(worldXZ * 5.1 + float2(7.2, 4.9), t * 2.1, 1.5 + hi, 0.0);
+                float v3XY = voronoi(worldXY * 5.1 + float2(7.2, 4.9), t * 2.1, 1.5 + hi, 0.0);
+                float v3YZ = voronoi(worldYZ * 5.1 + float2(7.2, 4.9), t * 2.1, 1.5 + hi, 0.0);
+                float v3   = v3XZ * blendXZ + v3XY * blendXY + v3YZ * blendYZ;
 
-                // Mid and high bands modulate noise time evolution independently
-                float midScaled  = _Band3 * 200.0;
-                float highScaled = _Band6 * 200.0;
+                // ── Edge detection ───────────────────────────────────────
+                float edge  = 1.0 - smoothstep(0.0, 0.08 + bass * 0.06, v1);
+                float edge2 = 1.0 - smoothstep(0.0, 0.04 + mid  * 0.03, v2);
 
-                // ── Domain warp ──────────────────────────────────────────────
-                // First pass: sample noise to get a warp offset
-                // Second pass: use that offset to displace the lookup point
-                // This creates the characteristic folded/fluid look
-                // Reference: https://iquilezles.org/articles/warp/
-                float2 warp = float2(
-                    fbm(uv + float2(t * 0.5, t * 0.3) + float2(1.7, 9.2), 2, 0.5),
-                    fbm(uv + float2(t * 0.4, t * 0.6) + float2(8.3, 2.8), 2, 0.5)
-                );
+                // ── Composite ────────────────────────────────────────────
+                float4 accentPulse = _AccentColor * (1.0 + rms * 1.5);
 
-                // Warp strength driven by mid frequencies
-                float warpStrength = _DispStrength * (1.0 + midScaled);
-                float2 warpedUV    = uv + warpStrength * (warp - 0.5) * 2.0;
+                float4 col = wallCol;
 
-                // Final noise sample on warped coordinates
-                float n = fbm(warpedUV + float2(t * 0.2, t * 0.15), 3, 0.5);
+                // Primary edges — coloured, bass reactive
+                col.rgb += edge  * accentPulse.rgb * _EdgeBrightness * (0.5 + bass * 0.8);
 
-                // High band brightens the result — presence/air adds shimmer
-                n += highScaled * 0.05;
-                n  = saturate(n);
+                // Secondary edges — quieter, mid reactive
+                col.rgb += edge2 * accentPulse.rgb * _EdgeBrightness * 0.3 * (0.3 + mid * 0.5);
 
-                // Colour: lerp between base and accent driven by noise value
-                // Accent colour pulses with RMS
-                fixed4 col = lerp(_BaseColor, _AccentColor * (1.0 + _RMS * 3.0), n);
+                // Interior tint — subtle colour wash inside cells, only on loud moments
+                float interior = saturate(1.0 - v1 * 2.0);
+                col.rgb = lerp(col.rgb,
+                               col.rgb * accentPulse.rgb * 0.5,
+                               interior * _EffectStrength * rms);
 
-                // Edge darkening (vignette) — draws attention to centre
-                float2 centered = i.uv - 0.5;
-                float  vignette = 1.0 - dot(centered, centered) * 2.0;
-                col.rgb        *= saturate(vignette);
+                // Hi freq shimmer grain
+                float grain = hash11(IN.uv * 300.0 + _Time.y * 3.0);
+                col.rgb    += grain * hi * 0.1;
+
+                // Effect only brightens — wall texture always readable underneath
+                col.rgb = max(col.rgb, wallCol.rgb);
 
                 return col;
             }
-            ENDCG
+            ENDHLSL
         }
     }
 }
