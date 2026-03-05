@@ -1,0 +1,5 @@
+/Users/main/Desktop/VR/DET11/det-group-project/unity/.utmp/RelWithDebInfo/3x6g6n14/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/main/Desktop/VR/DET11/det-group-project/unity/.utmp/RelWithDebInfo/3x6g6n14/arm64-v8a/CMakeFiles/rebuild_cache.dir
+/Users/main/Desktop/VR/DET11/det-group-project/unity/.utmp/RelWithDebInfo/3x6g6n14/arm64-v8a/GameActivity/CMakeFiles/game.dir
+/Users/main/Desktop/VR/DET11/det-group-project/unity/.utmp/RelWithDebInfo/3x6g6n14/arm64-v8a/GameActivity/CMakeFiles/edit_cache.dir
+/Users/main/Desktop/VR/DET11/det-group-project/unity/.utmp/RelWithDebInfo/3x6g6n14/arm64-v8a/GameActivity/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,2 @@
+/Users/main/Desktop/VR/DET11/det-group-project/unity/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp/CMakeLists.txt
+/Users/main/Desktop/VR/DET11/det-group-project/unity/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp/GameActivity/CMakeLists.txt
