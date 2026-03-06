@@ -1,37 +1,32 @@
 
-# det-group-project
+# Tombaugh Regio - DET Group 11 Project
+<img width="225.5" height="637" alt="Tombaugh Regio Poster" src="https://github.com/user-attachments/assets/4df518c6-24dc-4875-acca-68bf53ff0b2e" />
 
-
-## Overview
 ## Team
+- Anna Ørbeck
+- Chuck Long Ching
+- Lucas Ahlnäs
+- Tindra Heurlin
 
 ## Project Structure
 
 ```
 det-group-project/
-├── unity/           # Unity project
-├── blender/         # Blender files
-├── inspo/           # Textfil för inspirationslänkar etc
-├── docs/            # PDFer från föreläsningar etc
+├── unity/           
+├── blender/        
+├── inspo/           
+├── docs/            
 └── README.md
 ```
-
-## Getting Started
-
-### Prerequisites
+## Prerequisites
 
 - Unity `<6000.3.0f1>`
 
-### Setup
+## Setup
 
 1. Clone the repository
    ```bash
    git clone https://github.com/ahlnaes/det-group-project.git
    ```
 2. Open the `unity/` folder in Unity Hub
-
-## Development
-
-   - Branches exist for each member, feel free to use or ignore.
-   - Plz create a new folder for software specific things, like if you wanna do something in for example Blender -> create a folder called blender so that you can add software specific gitignore to that folder.
 
