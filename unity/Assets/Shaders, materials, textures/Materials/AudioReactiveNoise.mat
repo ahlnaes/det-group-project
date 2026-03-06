@@ -56,7 +56,7 @@ Material:
     - _GlitchAmount: -0.43
     - _GlowAmount: 0.03
     - _GlowStrength: 0.25
-    - _LineScale: 0.26
+    - _LineScale: 0.72
     - _LineWidth: 0.01
     - _NoiseScale: 2.25
     - _QueueControl: 0
