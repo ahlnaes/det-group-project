@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: AudioReactiveNoise
-  m_Shader: {fileID: -6465566751694194690, guid: 22b3aff5f7eee7f4dba3190479d45163, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: f4fdcfa8a5e1fae4ea5a03d913718b8d, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
