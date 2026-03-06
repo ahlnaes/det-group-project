@@ -31,5 +31,5 @@ det-group-project/
 2. Open the `unity/` folder in Unity Hub
 
 ## Documentation
-- [Audio Analyser](/docs/Audio Analyser Documentation (AI Generated)/Audio Analyser.md)
+- [Audio Analyser](/docs/Audio%20Analyser%20Documentation%20(AI%20Generated)/Audio%20Analyser.md)
 
