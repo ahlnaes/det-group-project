@@ -8,13 +8,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/MainScene.unity
     guid: cca8a35c9ea1bea4dbd7f200eaf9ff33
   - enabled: 0
     path: Assets/Scenes/TindraScene.unity
     guid: 1a2de61726b01324ebc6fb0c76dbe2b1
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/AudioReactiveSystem_TestScene.unity
     guid: 056e7ab640849294080224863e8f4375
   m_configObjects:
