@@ -1,11 +1,3 @@
----
-type: assignment
-tags:
-  - fft
-  - programming/audio
-  - unity
-parent: "[[DET]]"
----
 # Audio Analyser
 
 ## Overview
@@ -44,24 +36,24 @@ The `AudioAnalyser` MonoBehaviour sits on the same GameObject as an `AudioSource
 
 ## Concepts
 
-### [[Spectral Leakage]]
+### [Spectral Leakage](Spectral%20Leakage.md)
 
-The [[Fast Fourier Transform|FFT]] assumes your input buffer is one complete period of an infinitely repeating signal. **When the buffer edges don't line up smoothly, the discontinuity appears as a sharp transient** — which contains energy at all frequencies. This energy smears across frequency bins that shouldn't have any.
+The [FFT](Fast%20Fourier%20Transform.md) assumes your input buffer is one complete period of an infinitely repeating signal. **When the buffer edges don't line up smoothly, the discontinuity appears as a sharp transient** — which contains energy at all frequencies. This energy smears across frequency bins that shouldn't have any.
 
 **Why it matters:** Without correction, the "bass" band contains leaked energy from mid frequencies and vice versa. Band separation becomes blurry — kick drums bleed into mids, hi-hats bleed downward.
 
-**The fix — [Hann window](https://en.wikipedia.org/wiki/Hann_function):** Tapers the buffer edges to zero before the [[Fast Fourier Transform|FFT]]. No discontinuity at the seam, no leakage.
+**The fix — [Hann window](https://en.wikipedia.org/wiki/Hann_function):** Tapers the buffer edges to zero before the [FFT](Fast%20Fourier%20Transform.md). No discontinuity at the seam, no leakage.
 
 $$w[i] = 0.5 \cdot \left(1 - \cos\left(\frac{2\pi i}{N - 1}\right)\right)$$
 
 At `i = 0` and `i = N-1` (edges): result = 0 — tapered to zero.  
 At `i = N/2` (centre): result = 1 — fully preserved.
 
-Pre-computed once in `Awake()`, applied each frame before [[Fast Fourier Transform|FFT]].
+Pre-computed once in `Awake()`, applied each frame before [FFT](Fast%20Fourier%20Transform.md).
 
 ---
 
-### [[Thread Safety]]
+### [Thread Safety](Thread%20Safety.md)
 
 The DSP thread writes band values one element at a time. If the main thread reads mid-write, it gets a **torn read** — some values from the previous frame, some from the current one. Non-deterministic, nearly impossible to debug.
 
@@ -102,7 +94,7 @@ DSP THREAD                          MAIN THREAD
 
 ---
 
-### [[RMS — Root Mean Square]]
+### [RMS — Root Mean Square](RMS%20—%20Root%20Mean%20Square.md)
 
 Measures the perceived loudness of an audio signal. The name describes the three steps in reverse order:
 
@@ -145,21 +137,21 @@ for (int i = 0; i < data.Length; i += channels)
 
 ### Sample Accumulation
 
-`OnAudioFilterRead` is called with ~512 samples at a time. The [[Fast Fourier Transform|FFT]] needs 1024. Samples must be accumulated across multiple calls before an [[Fast Fourier Transform|FFT]] frame can be processed.
+`OnAudioFilterRead` is called with ~512 samples at a time. The [FFT](Fast%20Fourier%20Transform.md) needs 1024. Samples must be accumulated across multiple calls before an [FFT](Fast%20Fourier%20Transform.md) frame can be processed.
 
 `_accumulationPos` tracks progress. When it reaches `FFTSize`:
 
 1. Apply window function
 2. Calculate RMS
-3. Run [[Fast Fourier Transform|FFT]] and bin into bands
+3. Run [FFT](Fast%20Fourier%20Transform.md) and bin into bands
 4. Swap buffers
 5. Reset `_accumulationPos = 0` (no need to clear — values will be overwritten)
 
 ---
 
-### [[Fast Fourier Transform|FFT]] — [[Fast Fourier Transform]]
+### [FFT — Fast Fourier Transform](Fast%20Fourier%20Transform.md)
 
-Converts time-domain samples into frequency-domain magnitudes. Based on the Cooley-Tukey algorithm (1965), which reduces complexity from $O(N^2)$ to $O(N \log_2 N)$ by recursively splitting the [[Discrete Fourier Transform|DFT]] into even and odd sub-problems.
+Converts time-domain samples into frequency-domain magnitudes. Based on the Cooley-Tukey algorithm (1965), which reduces complexity from $O(N^2)$ to $O(N \log_2 N)$ by recursively splitting the [DFT](Discrete%20Fourier%20Transform.md) into even and odd sub-problems.
 
 $$X[k] = \sum_{n=0}^{N-1} x[n] \cdot e^{-i 2\pi k n / N}$$
 
@@ -172,21 +164,17 @@ $$|X[k]| = \frac{\sqrt{\text{real}[k]^2 + \text{imag}[k]^2}}{N}$$
 **References:**
 
 - Cooley, J.W. & Tukey, J.W. (1965). An algorithm for the machine calculation of complex Fourier series. _Mathematics of Computation, 19_(90), 297–301. https://doi.org/10.1090/S0025-5718-1965-0178586-1
-- Harris, F.J. (1978). On the use of windows for harmonic analysis with the [[discrete Fourier transform]]. _Proceedings of the IEEE, 66_(1), 51–83. https://doi.org/10.1109/PROC.1978.10837
+- Harris, F.J. (1978). On the use of windows for harmonic analysis with the [discrete Fourier transform](Discrete%20Fourier%20Transform.md). _Proceedings of the IEEE, 66_(1), 51–83. https://doi.org/10.1109/PROC.1978.10837
 
 ---
 
 ### Log-Frequency Band Binning
 
-The [[Fast Fourier Transform|FFT]] produces linearly spaced bins (each bin = `SampleRate / FFTSize` Hz wide). Human pitch perception is logarithmic — each octave doubles in frequency. A linear split would give bass only 3 bins and highs 500 bins.
+The [FFT](Fast%20Fourier%20Transform.md) produces linearly spaced bins (each bin = `SampleRate / FFTSize` Hz wide). Human pitch perception is logarithmic — each octave doubles in frequency. A linear split would give bass only 3 bins and highs 500 bins.
 
 Log spacing: exponential interpolation between `minFreq` and `maxFreq`:
 
 $$f_{low}(b) = f_{min} \cdot \left(\frac{f_{max}}{f_{min}}\right)^{b / B}$$
-
-```
-$$f_{low}(b) = f_{min} \cdot \left(\frac{f_{max}}{f_{min}}\right)^{b / B}$$
-```
 
 Where $B$ is the total number of bands.
 
@@ -259,7 +247,7 @@ Different from RMS — a loud sustained note has high RMS but low flux. A busy d
 ## References
 
 - Cooley, J.W. & Tukey, J.W. (1965). An algorithm for the machine calculation of complex Fourier series. _Mathematics of Computation, 19_(90), 297–301. https://doi.org/10.1090/S0025-5718-1965-0178586-1
-- Harris, F.J. (1978). On the use of windows for harmonic analysis with the [[discrete Fourier transform]]. _Proceedings of the IEEE, 66_(1), 51–83. https://doi.org/10.1109/PROC.1978.10837
+- Harris, F.J. (1978). On the use of windows for harmonic analysis with the [discrete Fourier transform](Discrete%20Fourier%20Transform.md). _Proceedings of the IEEE, 66_(1), 51–83. https://doi.org/10.1109/PROC.1978.10837
 - Bello, J.P., Daudet, L., Abdallah, S., Duxbury, C., Davies, M., & Sandler, M.B. (2005). A tutorial on onset detection in music signals. _IEEE Signal Processing Magazine, 22_(5), 23–41. https://doi.org/10.1109/MSP.2005.1511798
 - Bridson, R. (2007). Curl-noise for procedural fluid flow. _ACM SIGGRAPH 2007_. https://doi.org/10.1145/1276377.1276435
 - Worley, S. (1996). A cellular texture basis function. _SIGGRAPH '96_, 291–294. https://dl.acm.org/doi/10.1145/237170.237267
