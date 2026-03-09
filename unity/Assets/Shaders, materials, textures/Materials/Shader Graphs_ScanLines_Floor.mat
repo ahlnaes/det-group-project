@@ -7,13 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AudioReactiveNoise
-  m_Shader: {fileID: -6465566751694194690, guid: c98041acee91e724697c9e880118a968, type: 3}
+  m_Name: Shader Graphs_ScanLines_Floor
+  m_Shader: {fileID: -6465566751694194690, guid: 22b3aff5f7eee7f4dba3190479d45163, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -24,18 +24,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _AudioCurlCustomFunction_0a9a19fec4f1460d993c6a8555827f55_wallTex_3_Texture2D:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 66d3dc2185b3cf7428fe9892825811a3, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_4ac9bcab748e4dd98641c0d8caed0c0c_Texture_1_Texture2D:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -50,36 +38,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BaseSpeed: -27.58
-    - _Brightness: 6.9
-    - _CellScale: 0.6
-    - _DispStrength: 1.19
-    - _EdgeBrightness: 16.1
-    - _EffectStrenght: 24.13
-    - _EffectStrength: 0.6
-    - _GlitchAmount: -0.43
-    - _GlowAmount: 0.03
-    - _GlowStrength: 0.25
-    - _LineFrequency: 0
-    - _LineScale: 0.72
-    - _LineSharpness: 0.5
+    - _Brightness: 1
+    - _LineSharpness: 1
     - _LineWidth: 0.01
-    - _NoiseScale: 2.25
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _ScanPhase: -0.82
-    - _SliceCount: 0.43
-    - _SpeedScale: -40
-    - _TimeScale: 0.28
-    - _WallHeight: 0
-    - _XRMotionVectorsPass: 1
     m_Colors:
-    - _AccentColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseColor: {r: 0.049999982, g: 0.049999982, b: 0.14999998, a: 1}
     - _LineColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &8601030585067270735
+--- !u!114 &5104511676883615253
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
