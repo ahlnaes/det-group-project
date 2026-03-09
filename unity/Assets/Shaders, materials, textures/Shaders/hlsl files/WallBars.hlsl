@@ -1,0 +1,60 @@
+float _ScanPhase;
+float _WallHeight;
+
+void WallBars_float(
+    UnityTexture2D noiseTex,
+    UnitySamplerState noiseSampler,
+    float3 worldPos,
+    float4 barColor,
+    float brightness,
+    float scrollSpeed,
+    float flipSpeed,
+    float bassEnergy,
+    float kickEnvelope,
+    float columnCount,
+    float stripCount,
+    out float4 Out)
+{
+    float angle = atan2(worldPos.z, worldPos.x) / (3.14159265 * 2.0) + 0.5;
+    float height = saturate(worldPos.y / _WallHeight);
+
+    float2 u = float2(angle * columnCount, height / stripCount);
+    float2 speed = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, float2(0, u.y) * 16.0).rg;
+    u.x *= speed.g * 0.9 + 0.1;
+    u.x += _ScanPhase * (speed.r - 0.5) * scrollSpeed * (0.5 + bassEnergy + kickEnvelope * 2.0);
+
+    float noiseVal = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, u * 16.0).r;
+    float bar = frac(noiseVal + _ScanPhase * flipSpeed) < 0.15 ? 1.0 : 0.0;
+
+    float flash = 1.0 + kickEnvelope * 2.0;
+    Out = barColor * bar * brightness * flash;
+}
+
+void WallBars_half(
+    UnityTexture2D noiseTex,
+    UnitySamplerState noiseSampler,
+    float3 worldPos,
+    half4 barColor,
+    half brightness,
+    float scrollSpeed,
+    float flipSpeed,
+    float bassEnergy,
+    float kickEnvelope,
+    float columnCount,
+    float stripCount,
+    out half4 Out)
+{
+    float angle = atan2(worldPos.z, worldPos.x) / (3.14159265 * 2.0) + 0.5;
+    float height = saturate(worldPos.y / _WallHeight);
+
+    float2 u = float2(angle * columnCount, height / stripCount);
+    float2 speed = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, float2(0, u.y) * 16.0).rg;
+    u.x *= speed.g * 0.9 + 0.1;
+    u.x += _ScanPhase * (speed.r - 0.5) * scrollSpeed * (0.5 + bassEnergy + kickEnvelope * 2.0);
+
+    float noiseVal = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, u * 16.0).r;
+    float bar = frac(noiseVal + _ScanPhase * flipSpeed) < 0.15 ? 1.0 : 0.0;
+
+    float flash = 1.0 + kickEnvelope * 2.0;
+    Out = (half4)(barColor * bar * brightness * flash);
+}

@@ -37,8 +37,6 @@ namespace shader
             Shader.SetGlobalFloat(PropPedestalHeight, pedBounds.size.y);
             Shader.SetGlobalFloat(PropPedestalRadius, pedBounds.extents.x);
             Shader.SetGlobalFloat(PropLineFrequency,  lineFrequency);
-
-            Debug.Log($"[RoomGeometryGlobals] WallRadius={wallRadius}, WallHeight={wallHeight}, PedestalBaseY={pedBounds.min.y}");
         }
     }
 }
