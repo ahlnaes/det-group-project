@@ -11,7 +11,7 @@ using UnityEditor;
 public class WebSocketClientExample : MonoBehaviour
 {
     private WebSocket websocket;
-    public string serverIP = "XXX.XXX.XXX.XXX"; // Replace with your server's IP address
+    public string serverIP = "10.204.0.42"; // Replace with your server's IP address
     public int serverPort = 8081; // Replace with your server's port number (8081 is the default)
 
     [Range(0, 255)]
@@ -65,12 +65,12 @@ public class WebSocketClientExample : MonoBehaviour
             await websocket.Close();
     }
 
-    public async void SendHello()
+    public async void SendVibrate()
     {
         if (websocket != null && websocket.State == WebSocketState.Open)
         {
-            await websocket.SendText("Hello from Unity");
-            Debug.Log("Sent: Hello from Unity");
+            await websocket.SendText("Vibrate");
+            Debug.Log("Sent: Vibrate");
         }
         else
         {
