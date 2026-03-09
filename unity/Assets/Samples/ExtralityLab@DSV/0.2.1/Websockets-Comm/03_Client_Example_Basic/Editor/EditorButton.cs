@@ -13,7 +13,7 @@ public class EditorButton : Editor
         WebSocketClientExample myScript = (WebSocketClientExample)target;
         if (GUILayout.Button("Send Test Message"))
         {
-            myScript.SendHello();
+            myScript.SendVibrate();
         }
                 if (GUILayout.Button("Send \"LED ON\" instruction"))
         {

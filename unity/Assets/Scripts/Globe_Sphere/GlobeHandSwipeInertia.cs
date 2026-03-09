@@ -5,36 +5,53 @@ public class GlobeHandSwipeInertia : MonoBehaviour
     public Transform globeVisual;      
     public Transform leftHand;         
     public Transform rightHand;        
-    public float rotationSpeed = 200f; // Sensitivity for horizontal swipe
-    public float inertiaDamping = 3f;  // How quickly spinning slows down
+    public float rotationSpeed = 200f; 
+    public float inertiaDamping = 3f;  
 
     private Transform activeHand = null;
     private Vector3 lastHandPos;
-    private float angularVelocity; // horizontal only
+    private float angularVelocity;
+
+    public WebSocketClientExample websocketController;
+
+    // Hand radius for vibration
+    public float vibrateRadius = 0.4f;
+
+    // Track if vibration was already sent
+    private bool handWasInside = false;
 
     void Update()
     {
         Transform handToUse = null;
-        if (Vector3.Distance(leftHand.position, globeVisual.position) < 0.4f)
+        if (Vector3.Distance(leftHand.position, globeVisual.position) < vibrateRadius)
             handToUse = leftHand;
-        else if (Vector3.Distance(rightHand.position, globeVisual.position) < 0.4f)
+        else if (Vector3.Distance(rightHand.position, globeVisual.position) < vibrateRadius)
             handToUse = rightHand;
 
+        // Detect entering the 0.4 radius
+        if (handToUse != null && !handWasInside)
+        {
+            handWasInside = true;
+            // Trigger vibration once
+            if (websocketController != null)
+                websocketController.SendVibrate();
+        }
+        else if (handToUse == null)
+        {
+            handWasInside = false;
+        }
+
+        // Handle rotation
         if (handToUse != null)
         {
-            // First frame with this hand? Just set lastHandPos
             if (activeHand != handToUse)
             {
                 activeHand = handToUse;
                 lastHandPos = handToUse.position;
             }
 
-            // Horizontal delta only
             float deltaX = handToUse.position.x - lastHandPos.x;
-
             angularVelocity = -deltaX * rotationSpeed * 100f * Time.deltaTime;
-
-            // Apply horizontal rotation
             globeVisual.Rotate(Vector3.up, angularVelocity, Space.World);
 
             lastHandPos = handToUse.position;
@@ -42,8 +59,6 @@ public class GlobeHandSwipeInertia : MonoBehaviour
         else
         {
             activeHand = null;
-
-            // Apply horizontal inertia
             if (Mathf.Abs(angularVelocity) > 0.01f)
             {
                 globeVisual.Rotate(Vector3.up, angularVelocity, Space.World);
