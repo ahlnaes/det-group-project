@@ -2117,6 +2117,8 @@ GameObject:
   - component: {fileID: 388841639}
   - component: {fileID: 388841638}
   - component: {fileID: 388841640}
+  - component: {fileID: 388841641}
+  - component: {fileID: 388841642}
   m_Layer: 0
   m_Name: ShaderSwitcher
   m_TagString: Untagged
@@ -2169,6 +2171,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShaderEffectChangeDebug
   controller: {fileID: 388841638}
+--- !u!114 &388841641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388841637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2949b85b4c715a44ea9e4e5d95574ddf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShaderEffectController
+  targetRenderer: {fileID: 2085030083}
+  effects:
+  - {fileID: 2100000, guid: ed5a6c471021d32489911cdfbfd18ae7, type: 2}
+  - {fileID: 2100000, guid: b06b014ab2fac8742a59d9986346f639, type: 2}
+  startingEffect: 0
+--- !u!114 &388841642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388841637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d719147f92572094cad5998c347e097d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShaderEffectInput
+  controller: {fileID: 388841641}
 --- !u!1 &390451623
 GameObject:
   m_ObjectHideFlags: 0
@@ -2667,7 +2699,7 @@ PrefabInstance:
     - target: {fileID: -4780072770720950627, guid: 4e3dc56bd8c6f1a47af9c51065da5136, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b06b014ab2fac8742a59d9986346f639, type: 2}
+      objectReference: {fileID: 2100000, guid: ed5a6c471021d32489911cdfbfd18ae7, type: 2}
     - target: {fileID: 919132149155446097, guid: 4e3dc56bd8c6f1a47af9c51065da5136, type: 3}
       propertyPath: m_Name
       value: floor-uvmapped
@@ -6361,6 +6393,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _pokeInteractable: {fileID: 0}
   _buttonBaseTransform: {fileID: 0}
+--- !u!23 &2085030083 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4780072770720950627, guid: 4e3dc56bd8c6f1a47af9c51065da5136, type: 3}
+  m_PrefabInstance: {fileID: 631657621}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
