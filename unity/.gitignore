@@ -67,3 +67,6 @@ crashlytics-build.properties
 # Addressables
 # ============================================================
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/**/[Aa]ddressables[Pp]rofile[Ss]ettings.asset
+
+# Unity creates this file every time the project opens which leads to conflicts
+unity/Assets/Shaders, materials, textures/Fonts/Orbit-Regular SDF.asset

@@ -6,18 +6,18 @@ using UnityEngine;
 /// </summary>
 public class AnalyserDebugUI : MonoBehaviour
 {
-    private AudioAnalyser _analyser;
+    [SerializeField] private AudioAnalyser _analyser;
 
     // Layout constants
-    private const int BarWidth    = 60;
-    private const int BarMaxHeight = 300;
-    private const int BarY        = 400;
-    private const int PaddingX    = 20;
-    private const int RMSBarWidth = 20;
+    private const int BarWidth    = 30;
+    private const int BarMaxHeight = 150;
+    private const int BarY        = 200;
+    private const int PaddingX    = 10;
+    private const int RMSBarWidth = 10;
 
     private void Awake()
     {
-        _analyser = GetComponent<AudioAnalyser>();
+        
     }
 
     private void OnGUI()
