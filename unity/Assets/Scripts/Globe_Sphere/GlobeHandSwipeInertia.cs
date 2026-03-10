@@ -15,31 +15,45 @@ public class GlobeHandSwipeInertia : MonoBehaviour
     public WebSocketClientExample websocketController;
 
     // Hand radius for vibration
-    public float vibrateRadius = 0.4f;
+    public float vibrateRadius = 0.1f;
 
     // Track if vibration was already sent
     private bool handWasInside = false;
 
     void Update()
-    {
-        Transform handToUse = null;
-        if (Vector3.Distance(leftHand.position, globeVisual.position) < vibrateRadius)
-            handToUse = leftHand;
-        else if (Vector3.Distance(rightHand.position, globeVisual.position) < vibrateRadius)
-            handToUse = rightHand;
+{
+    Transform handToUse = null;
 
-        // Detect entering the 0.4 radius
-        if (handToUse != null && !handWasInside)
+    if (Vector3.Distance(leftHand.position, globeVisual.position) < vibrateRadius)
+        handToUse = leftHand;
+    else if (Vector3.Distance(rightHand.position, globeVisual.position) < vibrateRadius)
+        handToUse = rightHand;
+
+    bool handInside = handToUse != null;
+
+    // Hand ENTERS radius
+    if (handInside && !handWasInside)
+    {
+        handWasInside = true;
+
+        if (websocketController != null)
         {
-            handWasInside = true;
-            // Trigger vibration once
-            if (websocketController != null)
-                websocketController.SendVibrate();
+            websocketController.SendVibrateOn();
+            Debug.Log("Sent VibrateOn");
         }
-        else if (handToUse == null)
+    }
+
+    // Hand LEAVES radius
+    if (!handInside && handWasInside)
+    {
+        handWasInside = false;
+
+        if (websocketController != null)
         {
-            handWasInside = false;
+            websocketController.SendVibrateOff();
+            Debug.Log("Sent VibrateOff");
         }
+    }
 
         // Handle rotation
         if (handToUse != null)

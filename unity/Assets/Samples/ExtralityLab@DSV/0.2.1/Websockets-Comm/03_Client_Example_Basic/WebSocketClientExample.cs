@@ -65,12 +65,24 @@ public class WebSocketClientExample : MonoBehaviour
             await websocket.Close();
     }
 
-    public async void SendVibrate()
+    public async void SendVibrateOn()
     {
         if (websocket != null && websocket.State == WebSocketState.Open)
         {
-            await websocket.SendText("Vibrate");
-            Debug.Log("Sent: Vibrate");
+            await websocket.SendText("VibrateOn");
+            Debug.Log("Sent: VibrateOn");
+        }
+        else
+        {
+            Debug.LogWarning("WebSocket not connected");
+        }
+    }
+    public async void SendVibrateOff()
+    {
+        if (websocket != null && websocket.State == WebSocketState.Open)
+        {
+            await websocket.SendText("VibrateOff");
+            Debug.Log("Sent: VibrateOff");
         }
         else
         {
