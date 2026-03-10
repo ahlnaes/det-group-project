@@ -15,7 +15,7 @@ public class GlobeHandSwipeInertia : MonoBehaviour
     public WebSocketClientExample websocketController;
 
     // Hand radius for vibration
-    public float vibrateRadius = 0.4f;
+    public float vibrateRadius = 0.1f;
 
     // Track if vibration was already sent
     private bool handWasInside = false;
