@@ -28,7 +28,7 @@ float2 ShaderDisplace(float3 surfaceWorldPos, float2 currentUV){
     return totalOffset;
 }
 
-void WallBars_float(
+void WallLinesScrollDown_float(
     UnityTexture2D noiseTex,
     UnitySamplerState noiseSampler,
     float3 worldPos,
@@ -48,17 +48,17 @@ void WallBars_float(
     float2 u = float2(angle * columnCount, height / stripCount);
     u += ShaderDisplace(worldPos, u);
     float2 speed = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, float2(0, u.y) * 16.0).rg;
-    u.x *= speed.g * 0.9 + 0.1;
-    u.x += _ScanPhase * (speed.r - 0.5) * scrollSpeed * (0.5 + bassEnergy + kickEnvelope * 2.0);
+    u.y *= speed.g * 0.9 + 0.1;
+    u.y += _ScanPhase * (speed.r - 0.5) * scrollSpeed * (0.5 + bassEnergy + kickEnvelope * 2.0);
 
     float noiseVal = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, u * 16.0).r;
-    float bar = frac(noiseVal + _ScanPhase * flipSpeed) < 0.15 ? 1.0 : 0.0;
+    float bar = noiseVal < 0.15 ? 1.0 : 0.0;
 
     float flash = 1.0 + kickEnvelope * 2.0;
     Out = barColor * bar * brightness * flash;
 }
 
-void WallBars_half(
+void WallLinesScrollDown_half(
     UnityTexture2D noiseTex,
     UnitySamplerState noiseSampler,
     float3 worldPos,
@@ -78,11 +78,11 @@ void WallBars_half(
     float2 u = float2(angle * columnCount, height / stripCount);
     u += ShaderDisplace(worldPos, u);
     float2 speed = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, float2(0, u.y) * 16.0).rg;
-    u.x *= speed.g * 0.9 + 0.1;
-    u.x += _ScanPhase * (speed.r - 0.5) * scrollSpeed * (0.5 + bassEnergy + kickEnvelope * 2.0);
+    u.y *= speed.g * 0.9 + 0.1;
+    u.y += _ScanPhase * (speed.r - 0.5) * scrollSpeed * (0.5 + bassEnergy + kickEnvelope * 2.0);
 
     float noiseVal = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, u * 16.0).r;
-    float bar = frac(noiseVal + _ScanPhase * flipSpeed) < 0.15 ? 1.0 : 0.0;
+    float bar = noiseVal < 0.15 ? 1.0 : 0.0;
 
     float flash = 1.0 + kickEnvelope * 2.0;
     Out = (half4)(barColor * bar * brightness * flash);

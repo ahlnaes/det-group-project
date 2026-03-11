@@ -2679,9 +2679,8 @@ MonoBehaviour:
     effects:
     - {fileID: 2100000, guid: 79633fda7b284004da7a85b3af22b853, type: 2}
     - {fileID: 2100000, guid: c1aa516c575593c4abb3e9d82a1e18d3, type: 2}
-    - {fileID: 2100000, guid: d3e8e789078ed924590fc3e2f2622265, type: 2}
-    - {fileID: 2100000, guid: 69a1fdfea49ddd54b90336f6f1bfb9a1, type: 2}
-    startingEffect: 3
+    - {fileID: 2100000, guid: b7752a27443a4194e83fde6a28c6a230, type: 2}
+    startingEffect: 2
     currentEffect: 0
   - label: Floor
     targetRenderer: {fileID: 2085030083}
@@ -2689,8 +2688,7 @@ MonoBehaviour:
     - {fileID: 2100000, guid: 79633fda7b284004da7a85b3af22b853, type: 2}
     - {fileID: 2100000, guid: b06b014ab2fac8742a59d9986346f639, type: 2}
     - {fileID: 2100000, guid: ed5a6c471021d32489911cdfbfd18ae7, type: 2}
-    - {fileID: 2100000, guid: e50c91397df51464186c11dce8de4ac5, type: 2}
-    startingEffect: 3
+    startingEffect: 2
     currentEffect: 0
 --- !u!114 &388841644
 MonoBehaviour:
@@ -7852,7 +7850,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 417a0f6d88d3ff24c9772f6a226635a8, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
