@@ -1,5 +1,32 @@
 float _ScanPhase;
 float _WallHeight;
+float3 _FingerPositions[2];
+float _FingerMaxDist;
+float _FingerStrength;
+float _FingerFalloff;
+
+float2 ShaderDisplace(float3 surfaceWorldPos, float2 currentUV){
+    float2 totalOffset = float2(0, 0);
+
+    for (int i = 0; i < 2; i++)
+    {
+        float3 fingerPos = _FingerPositions[i];
+        float3 delta = surfaceWorldPos - fingerPos;
+        float dist = length(delta);
+
+        // only within maxDistance
+        float influence = 1.0 - saturate(dist / _FingerMaxDist);
+
+        //stronger closer to finger
+        float strength = pow(influence, _FingerFalloff) / max(dist * dist, 0.001);
+
+        //direction of displacement in UV space
+        float2 dir = normalize(float2(delta.x, delta.y + delta.z));
+        totalOffset += dir * strength * _FingerStrength;
+    }
+
+    return totalOffset;
+}
 
 void WallBars_float(
     UnityTexture2D noiseTex,
@@ -19,6 +46,7 @@ void WallBars_float(
     float height = saturate(worldPos.y / _WallHeight);
 
     float2 u = float2(angle * columnCount, height / stripCount);
+    u += ShaderDisplace(worldPos, u);
     float2 speed = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, float2(0, u.y) * 16.0).rg;
     u.x *= speed.g * 0.9 + 0.1;
     u.x += _ScanPhase * (speed.r - 0.5) * scrollSpeed * (0.5 + bassEnergy + kickEnvelope * 2.0);
