@@ -770,6 +770,28 @@ MonoBehaviour:
   installationRoutineCheckpoint:
     _installationRoutineId: 2063f481-1b63-4eda-9ee8-a00df98536bc
     _installationVariants: []
+--- !u!114 &55115273 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1528346310, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+  m_PrefabInstance: {fileID: 55115269}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7daff26e66096cd49a253ca3ab592c03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &55115274 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1610028817, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+  m_PrefabInstance: {fileID: 55115269}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7daff26e66096cd49a253ca3ab592c03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &62686414
 GameObject:
   m_ObjectHideFlags: 0
@@ -2615,6 +2637,8 @@ GameObject:
   - component: {fileID: 388841639}
   - component: {fileID: 388841643}
   - component: {fileID: 388841644}
+  - component: {fileID: 388841646}
+  - component: {fileID: 388841645}
   m_Layer: 0
   m_Name: ShaderManager
   m_TagString: Untagged
@@ -2696,6 +2720,36 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &388841645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388841637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec264ca74d6a0f4449e051d44a6e894f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::handtracking.HandTracker
+  leftHand: {fileID: 55115274}
+  rightHand: {fileID: 55115273}
+--- !u!114 &388841646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388841637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f281ff20bce932e4f97f3cab3d397da8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::handtracking.HandsShaderDisplacement
+  handTracker: {fileID: 388841645}
+  maxDistance: 0.3
+  strength: 0.15
+  falloff: 2
 --- !u!1 &390451623
 GameObject:
   m_ObjectHideFlags: 0
