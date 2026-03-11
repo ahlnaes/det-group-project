@@ -56,11 +56,11 @@ Material:
     m_Floats:
     - _BaseSpeed: -27.58
     - _Brightness: 6.9
-    - _CellScale: 0.87
+    - _CellScale: 0.51
     - _ColumnCount: 0
     - _DispStrength: 1.19
-    - _EdgeBrightness: 16.1
-    - _EffectStrenght: 24.13
+    - _EdgeBrightness: 14.2
+    - _EffectStrenght: 2.66
     - _EffectStrength: 0.6
     - _FlipSpeed: 0.05
     - _GlitchAmount: -0.43
@@ -78,11 +78,11 @@ Material:
     - _SliceCount: 0.43
     - _SpeedScale: -40
     - _StripCount: 0
-    - _TimeScale: 0.4
+    - _TimeScale: 0.13
     - _WallHeight: 0
     - _XRMotionVectorsPass: 1
     m_Colors:
-    - _AccentColor: {r: 1, g: 1, b: 1, a: 1}
+    - _AccentColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _BarColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 0.049999982, g: 0.049999982, b: 0.14999998, a: 1}
     - _LineColor: {r: 1, g: 1, b: 1, a: 1}

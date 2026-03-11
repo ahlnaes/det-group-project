@@ -47,7 +47,7 @@ Material:
     - _FlipSpeed: 0
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _ScrollSpeed: 0.1
+    - _ScrollSpeed: 0.05
     - _StripCount: 12
     m_Colors:
     - _BarColor: {r: 1, g: 1, b: 1, a: 1}

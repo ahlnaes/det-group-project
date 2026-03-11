@@ -1,3 +1,4 @@
+using shader;
 using UnityEngine;
 
 public class ExperienceManager : MonoBehaviour
@@ -6,13 +7,17 @@ public class ExperienceManager : MonoBehaviour
     public GameObject audioAnalyser;
     [Header("Shader Effect Controller")]
     public GameObject shaderEffectController;
+    [Header("Lights Controller")]
+    public GameObject lightsController;
     
     private AudioSource _audioSource;
-    private ShaderEffectController _shaderEffectController;
+    private ShaderEffectManager _shaderEffectManager;
+    private LightFadeOut _lightFadeOut;
     void Start()
     {
         _audioSource = audioAnalyser.GetComponent<AudioSource>();
-        _shaderEffectController = shaderEffectController.GetComponent<ShaderEffectController>();
+        _shaderEffectManager = shaderEffectController.GetComponent<ShaderEffectManager>();
+        _lightFadeOut = lightsController.GetComponent<LightFadeOut>();
     }
 
     // Update is called once per frame
@@ -24,6 +29,6 @@ public class ExperienceManager : MonoBehaviour
     public void StartExperience()
     {
         _audioSource.Play();
-        _shaderEffectController.SwitchTo(1);
+        _shaderEffectManager.SwitchTo(1);
     }
 }
