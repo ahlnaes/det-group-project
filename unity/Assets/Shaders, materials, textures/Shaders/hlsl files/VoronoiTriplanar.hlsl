@@ -1,84 +1,52 @@
 #ifndef VORONOI_TRIPLANAR_INCLUDED
 #define VORONOI_TRIPLANAR_INCLUDED
 
-// ── Hash ─────────────────────────────────────────────────────────────────
-float2 CellHash(float2 p)
-{
-    p = float2(dot(p, float2(127.1, 311.7)),
-               dot(p, float2(269.5, 183.3)));
-    return frac(sin(p) * 43758.5453);
-}
+// ── Finger displacement ───────────────────────────────────────────────────
+float3 _FingerPositions[2];
+float  _FingerMaxDist;
+float  _FingerStrength;
+float  _FingerFalloff;
 
-float Hash11(float2 p)
+float2 ShaderDisplace(float3 surfaceWorldPos)
 {
-    p = frac(p * float2(234.34, 435.345));
-    p += dot(p, p + 34.23);
-    return frac(p.x * p.y);
-}
-
-// ── Voronoi ───────────────────────────────────────────────────────────────
-// Worley (1996) https://dl.acm.org/doi/10.1145/237170.237267
-float Voronoi(float2 uv, float t, float audioSpeed, float audioPull)
-{
-    float2 cell    = floor(uv);
-    float2 local   = frac(uv);
-    float  minDist = 8.0;
-
-    for (int y = -1; y <= 1; y++)
+    float2 totalOffset = float2(0, 0);
+    for (int i = 0; i < 2; i++)
     {
-        for (int x = -1; x <= 1; x++)
-        {
-            float2 neighbour    = float2(x, y);
-            float2 h            = CellHash(cell + neighbour);
-            float2 featurePoint = 0.5 + 0.5 * sin(t * audioSpeed + 6.28 * h);
-            featurePoint        = lerp(featurePoint, round(featurePoint), audioPull);
-            float2 diff         = neighbour + featurePoint - local;
-            float  d            = dot(diff, diff);
-            minDist             = min(minDist, d);
-        }
+        float3 delta     = surfaceWorldPos - _FingerPositions[i];
+        float  dist      = length(delta);
+        float  influence = 1.0 - saturate(dist / _FingerMaxDist);
+        float  strength  = pow(influence, _FingerFalloff) / max(dist * dist, 0.001);
+        float2 dir       = normalize(float2(delta.x, delta.y + delta.z));
+        totalOffset     += dir * strength * _FingerStrength;
     }
-    return sqrt(minDist);
+    return totalOffset;
 }
 
-// ── Triplanar voronoi ─────────────────────────────────────────────────────
-float3 TriplanarVoronoi(
-    float3 worldPos,
-    float3 worldNormal,
-    float  cellScale,
-    float  t,
-    float  rms,
-    float  bass,
-    float  mid,
-    float  lowMid,
-    float  hi)
+// ── Hash ──────────────────────────────────────────────────────────────────
+float Hash13(float3 p)
 {
-    float3 blend = pow(abs(worldNormal), 8.0);
-    blend /= (blend.x + blend.y + blend.z);
+    p = frac(p * float3(0.1031, 0.1030, 0.0973));
+    p += dot(p, p.yzx + 33.33);
+    return frac((p.x + p.y) * p.z);
+}
 
-    float2 worldXZ = worldPos.xz * cellScale;
-    float2 worldXY = worldPos.xy * cellScale;
-    float2 worldYZ = worldPos.yz * cellScale;
-
-    float v1 = Voronoi(worldYZ,             t,       1.0 + rms, bass   * 0.6) * blend.x
-             + Voronoi(worldXZ,             t,       1.0 + rms, bass   * 0.6) * blend.y
-             + Voronoi(worldXY,             t,       1.0 + rms, bass   * 0.6) * blend.z;
-
-    float2 off2 = float2(3.7, 1.4);
-    float v2 = Voronoi(worldYZ * 2.3 + off2, t * 1.3, 1.2 + mid,  lowMid * 0.4) * blend.x
-             + Voronoi(worldXZ * 2.3 + off2, t * 1.3, 1.2 + mid,  lowMid * 0.4) * blend.y
-             + Voronoi(worldXY * 2.3 + off2, t * 1.3, 1.2 + mid,  lowMid * 0.4) * blend.z;
-
-    float2 off3 = float2(7.2, 4.9);
-    float v3 = Voronoi(worldYZ * 5.1 + off3, t * 2.1, 1.5 + hi,  0.0) * blend.x
-             + Voronoi(worldXZ * 5.1 + off3, t * 2.1, 1.5 + hi,  0.0) * blend.y
-             + Voronoi(worldXY * 5.1 + off3, t * 2.1, 1.5 + hi,  0.0) * blend.z;
-
-    return float3(v1, v2, v3);
+// ── 3D Value Noise ────────────────────────────────────────────────────────
+float ValueNoise(float3 p)
+{
+    float3 i = floor(p);
+    float3 f = frac(p);
+    float3 u = f * f * (3.0 - 2.0 * f);
+    return lerp(
+        lerp(
+            lerp(Hash13(i + float3(0,0,0)), Hash13(i + float3(1,0,0)), u.x),
+            lerp(Hash13(i + float3(0,1,0)), Hash13(i + float3(1,1,0)), u.x), u.y),
+        lerp(
+            lerp(Hash13(i + float3(0,0,1)), Hash13(i + float3(1,0,1)), u.x),
+            lerp(Hash13(i + float3(0,1,1)), Hash13(i + float3(1,1,1)), u.x), u.y),
+        u.z);
 }
 
 // ── Main entry point ──────────────────────────────────────────────────────
-// Audio values arrive pre-processed from the graph — scale/remap them
-// using math nodes in Shader Graph before passing in here.
 void AudioCellular_float(
     float3 worldPos,
     float3 worldNormal,
@@ -86,40 +54,51 @@ void AudioCellular_float(
     float4 wallColor,
     float4 accentColor,
     float  cellScale,
-    float  timeScale,
+    float  noiseStretchX,
+    float  noiseStretchY,
+    float  t,
     float  effectStrength,
     float  edgeBrightness,
-    float  rms,      // pre-processed in graph before arriving here
-    float  bass,     // _Band1, scaled/remapped in graph
-    float  lowMid,   // _Band2, scaled/remapped in graph
-    float  mid,      // _Band3, scaled/remapped in graph
-    float  hi,       // _Band6, scaled/remapped in graph
+    float  rms,
+    float  bass,
+    float  lowMid,
+    float  mid,
+    float  hi,
     out float4 color)
 {
-    float t = _Time.y * timeScale;
+    // Displace worldPos XY before building p —
+    // fingers push/pull the noise pattern on the surface
+    float2 disp = ShaderDisplace(worldPos);
+    float3 displacedPos = float3(
+        worldPos.x + disp.x,
+        worldPos.y + disp.y,
+        worldPos.z
+    );
 
-    float3 layers = TriplanarVoronoi(
-        worldPos, worldNormal, cellScale,
-        t, rms, bass, mid, lowMid, hi);
+    float3 p = float3(
+        displacedPos.x * cellScale * noiseStretchX,
+        displacedPos.y * cellScale * noiseStretchY,
+        displacedPos.z * cellScale
+    );
 
-    float v1 = layers.x;
-    float v2 = layers.y;
+    float v1 = ValueNoise(p + float3(0.0, 0.0, t * (1.0 + rms)));
+    float v2 = ValueNoise(p * 2.3 + float3(3.7, 1.4, t * (1.3 + mid)));
 
-    float edge  = 1.0 - smoothstep(0.0, 0.08 + bass * 0.06, v1);
-    float edge2 = 1.0 - smoothstep(0.0, 0.04 + mid  * 0.03, v2);
+    float edge  = 1.0 - smoothstep(0.45, 0.55 + bass * 0.1,  v1);
+    float edge2 = 1.0 - smoothstep(0.45, 0.52 + mid  * 0.05, v2);
 
     float4 accentPulse = accentColor * (1.0 + rms * 1.5);
 
-    float4 col = wallColor;
-    col.rgb   += edge  * accentPulse.rgb * edgeBrightness * (0.5 + bass * 0.8);
-    col.rgb   += edge2 * accentPulse.rgb * edgeBrightness * 0.3 * (0.3 + mid * 0.5);
+    float4 col  = wallColor;
+    col.rgb    += edge  * accentPulse.rgb * edgeBrightness * (0.5 + bass * 0.8);
+    col.rgb    += edge2 * accentPulse.rgb * edgeBrightness * 0.3 * (0.3 + mid * 0.5);
 
-    float interior = saturate(1.0 - v1 * 2.0);
+    float interior = saturate(v1 * 2.0 - 1.0);
     col.rgb = lerp(col.rgb,
                    col.rgb * accentPulse.rgb * 0.5,
                    interior * effectStrength * rms);
 
-    float grain = Hash11(uv * 300.0 + _Time.y * 3.0);
+    float grain = Hash13(float3(uv * 300.0, t * 3.0));
     col.rgb    += grain * hi * 0.1;
 
     col.rgb = max(col.rgb, wallColor.rgb);

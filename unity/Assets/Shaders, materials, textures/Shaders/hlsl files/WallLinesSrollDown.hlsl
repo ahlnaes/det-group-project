@@ -32,6 +32,7 @@ void WallLinesScrollDown_float(
     UnityTexture2D noiseTex,
     UnitySamplerState noiseSampler,
     float3 worldPos,
+    float3 rawWorldPos,        // <-- add this: unmodified world position for displacement
     float4 barColor,
     float brightness,
     float scrollSpeed,
@@ -46,7 +47,7 @@ void WallLinesScrollDown_float(
     float height = saturate(worldPos.y / _WallHeight);
 
     float2 u = float2(angle * columnCount, height / stripCount);
-    u += ShaderDisplace(worldPos, u);
+    u += ShaderDisplace(rawWorldPos, u);    // <-- use rawWorldPos here
     float2 speed = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, float2(0, u.y) * 16.0).rg;
     u.y *= speed.g * 0.9 + 0.1;
     u.y += _ScanPhase * (speed.r - 0.5) * scrollSpeed * (0.5 + bassEnergy + kickEnvelope * 2.0);
@@ -62,6 +63,7 @@ void WallLinesScrollDown_half(
     UnityTexture2D noiseTex,
     UnitySamplerState noiseSampler,
     float3 worldPos,
+    float3 rawWorldPos,        // <-- same here
     half4 barColor,
     half brightness,
     float scrollSpeed,
@@ -76,7 +78,7 @@ void WallLinesScrollDown_half(
     float height = saturate(worldPos.y / _WallHeight);
 
     float2 u = float2(angle * columnCount, height / stripCount);
-    u += ShaderDisplace(worldPos, u);
+    u += ShaderDisplace(rawWorldPos, u);    // <-- and here
     float2 speed = SAMPLE_TEXTURE2D(noiseTex.tex, noiseSampler.samplerstate, float2(0, u.y) * 16.0).rg;
     u.y *= speed.g * 0.9 + 0.1;
     u.y += _ScanPhase * (speed.r - 0.5) * scrollSpeed * (0.5 + bassEnergy + kickEnvelope * 2.0);
