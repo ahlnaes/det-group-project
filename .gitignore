@@ -38,3 +38,4 @@ desktop.ini
 .env.*
 *.key
 *.pem
+unity/Assets/Shaders, materials, textures/Fonts/Orbit-Regular SDF.asset
