@@ -3172,7 +3172,7 @@ MonoBehaviour:
   - label: Walls
     targetRenderer: {fileID: 1649425197}
     effects:
-    - {fileID: 2100000, guid: 488a4c6f322075146a32c8230a638c8c, type: 2}
+    - {fileID: 2100000, guid: 7b93b7c216da8314a9ccfe18bb7d1105, type: 2}
     - {fileID: 2100000, guid: 69a1fdfea49ddd54b90336f6f1bfb9a1, type: 2}
     - {fileID: 2100000, guid: 3af64e006d3e0bd4daf7a4a7ccbfdcaf, type: 2}
     - {fileID: 2100000, guid: d3e8e789078ed924590fc3e2f2622265, type: 2}
@@ -3182,7 +3182,7 @@ MonoBehaviour:
   - label: Floor
     targetRenderer: {fileID: 2085030083}
     effects:
-    - {fileID: 2100000, guid: 488a4c6f322075146a32c8230a638c8c, type: 2}
+    - {fileID: 2100000, guid: 7b93b7c216da8314a9ccfe18bb7d1105, type: 2}
     - {fileID: 2100000, guid: e50c91397df51464186c11dce8de4ac5, type: 2}
     - {fileID: 2100000, guid: c4b950fc738d7834a9bf3ad667bc8337, type: 2}
     - {fileID: 2100000, guid: ed5a6c471021d32489911cdfbfd18ae7, type: 2}
