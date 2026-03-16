@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class CanvasManager : MonoBehaviour
 {
@@ -6,16 +7,34 @@ public class CanvasManager : MonoBehaviour
     public GameObject canvasToHide;
     public GameObject canvasToShow;
 
+    [Header("Delay Settings")]
+    public float delayTime = 3f; // Default delay of 3 seconds
+
     /// <summary>
-    /// Hides the first canvas and shows the second one.
+    /// Starts the delayed canvas swap.
     /// </summary>
     public void SwapCanvases()
     {
+        StartCoroutine(SwapWithDelay());
+    }
+
+    private IEnumerator SwapWithDelay()
+    {
+        // Disable both canvases
         if (canvasToHide != null)
         {
             canvasToHide.SetActive(false);
         }
 
+        if (canvasToShow != null)
+        {
+            canvasToShow.SetActive(false);
+        }
+
+        // Wait for delay
+        yield return new WaitForSeconds(delayTime);
+
+        // Enable the exit canvas
         if (canvasToShow != null)
         {
             canvasToShow.SetActive(true);
