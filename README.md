@@ -46,14 +46,21 @@ Tombaugh Regio demonstrates how VR can expand the boundaries of musical expressi
 
 ## Design Process
 
-[_Add evidence on the general overview of how you planned, designed, and developed your project, including the goals, challenges, and solutions._]
+The design of Tombaugh Regio was driven by a curiosity to explore new ways of experiencing music through immersive and interactive technology. Our process combined creative exploration with user-centered design. We moved iteratively between ideation, fast-prototyping, and testing.
 
-For example:
-- Brainstorming: A screenshot of the whiteboard or post-it notes used to land the project's idea.
-- User Research: Pictures and summary of how you conducted user research, such as surveys, interviews, or observations, and what insights you gained from it.
-- User Persona: A description of your target user, their needs, motivations, and pain points, and how your project addresses them.
-- User Journey: A visualization of how your user interacts with your project, from the initial trigger to the final outcome, and what emotions they experience along the way.
-- Wireframes and Prototypes: A collection of sketches, mockups, or prototypes that show the layout, structure, and functionality of your project, and how you tested and iterated on them.
+**Brainstorming** 
+<img width="6817" height="5958" alt="image" src="https://github.com/user-attachments/assets/7182a5b5-29c6-4894-92ad-45e19ce1539c" />
+
+**User Research/Persona** 
+<img width="5240" height="2120" alt="image" src="https://github.com/user-attachments/assets/71108151-ec7c-40ed-ae3c-30a9cc6d73ec" />
+
+**User Journey** 
+<img width="2912" height="1824" alt="image" src="https://github.com/user-attachments/assets/b5f0aab1-8c20-4a4d-aec9-34762cb3db67" />
+
+
+**Wireframes and Prototypes** 
+<img width="9824" height="6624" alt="image" src="https://github.com/user-attachments/assets/76503f5f-3667-4a4f-811a-4d33dda66f08" />
+
 
 
 ## System description
