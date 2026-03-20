@@ -93,20 +93,17 @@ You also need to install the following dependencies or libraries for your projec
 
 [_Usage section showing how to use your project and interact with its features. You can use examples, screenshots, gifs, or videos to demonstrate the user interface, controls, and feedback of your project. You can also provide tips, tricks, or best practices for using your project effectively._]
 
-To use [Your App XR} and interact with its features, follow the guidelines below:
+To experience Tombaugh Regio and interact with its features, follow the guidelines below:
 
-- To move around, use the touchpad or the joystick on your controller, or swipe on your phone screen.
-- To select ...a planet or a moon, point at it with your controller or your phone, or gaze at it with your headset.
-- To zoom in or out, use the trigger or the button on your controller, or pinch on your phone screen.
-- To access the information panel, press...
-- To use voice commands, say "OK" followed by one of the following phrases:
-  - "Show me [X]" - to show X element
-  - "Close window Y" - to close window Y
-  
-Some tips, tricks, and best practices for using [Your App XR} effectively:
+- Movement: Move around physically within your space to explore the environment.
+- Interacting with buttons: Use your finger or hand to poke the buttons.
+- Rotating the sphere: Swipe the sphere to rotate it and view it from different angles.
+- Interactive walls: Touch the walls to trigger reactive effects.
 
-- Tip 1
-- Tip 2
+Tips:
+
+- Make sure you have enough physical space to move safely.
+- Interact slowly and deliberately for better tracking accuracy.
 
 
 ## References
