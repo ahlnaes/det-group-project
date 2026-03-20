@@ -2,8 +2,9 @@
 # Tombaugh Regio - DET Group 11 Project
 <img width="225.5" height="637" alt="Tombaugh Regio Poster" src="https://github.com/user-attachments/assets/4df518c6-24dc-4875-acca-68bf53ff0b2e" />
 
-## Team
+## Team 
 
+- Anna Ørbeck
 - Chuck Long Ching
 - Lucas Ahlnäs
 - Tindra Heurlin
@@ -33,15 +34,9 @@ det-group-project/
 ## Documentation
 - [Audio Analyser](/docs/Audio%20Analyser%20Documentation%20(AI%20Generated)/Audio%20Analyser.md)
 
-# [Name of the project]
-
-_Some examples are shown below but you should expand on each subtitle as much as needed to provide comprehensive information/ **MarkDown** reference is available here: <https://www.markdownguide.org/basic-syntax/>_
-
-Include the name, logo and images refering to your project
-
-![{Your App XR} logo](./docs/example-image.jpg)
-
 ## Introduction
+
+Tombaugh Regio is an immersive experience that invites users into a space where sound and visuals merge, allowing them to explore and experience original music through a dynamic and interactive elements. Our goal
 
 [Project XR ] is an educational XR experience that lets you explore in 3D [...] . Learn about [...].
 
