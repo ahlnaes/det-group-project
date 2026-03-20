@@ -36,13 +36,13 @@ det-group-project/
 
 ## Introduction
 
-Tombaugh Regio is an immersive experience that invites users into a space where sound and visuals merge, allowing them to explore and experience original music through a dynamic and interactive elements. Our goal
+**Tombaugh Regio** is an immersive virtual‑reality experience where sound and visuals merge into a single interactive environment. The project invites users to explore original music through dynamic 3D elements, transforming listening into a spatial and sensory journey.
 
-[Project XR ] is an educational XR experience that lets you explore in 3D [...] . Learn about [...].
+Traditional music experiences are mostly passive and listeners have limited ways to engage with sound beyond hearing it. We wanted to challenge that limitation by exploring how music could be experienced rather than simply consumed.
+ 
+By combining 3D modelling, Unity development, tangible interactions, music composition, visual design and effects, we created a virtual environment that visually interprets sound in real time. Users can move, interact, and respond to the music in a way that feels alive and personal.
 
-The problem detected was...
-
-The proposed solution is valuable because...
+Tombaugh Regio demonstrates how VR can expand the boundaries of musical expression. It offers artists new ways to present their work, gives audiences a deeper emotional connection to sound, and showcases the potential of immersive media as a creative tool.
 
 ## Design Process
 
