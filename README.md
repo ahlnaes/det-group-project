@@ -68,8 +68,6 @@ You also need to install the following dependencies or libraries for your projec
 
 ## Usage
 
-[_Usage section showing how to use your project and interact with its features. You can use examples, screenshots, gifs, or videos to demonstrate the user interface, controls, and feedback of your project. You can also provide tips, tricks, or best practices for using your project effectively._]
-
 To experience Tombaugh Regio and interact with its features, follow the guidelines below:
 
 - Movement: Move around physically within your space to explore the environment.
