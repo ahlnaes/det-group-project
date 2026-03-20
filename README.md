@@ -2,13 +2,6 @@
 # Tombaugh Regio - DET Group 11 Project
 <img width="225.5" height="637" alt="Tombaugh Regio Poster" src="https://github.com/user-attachments/assets/4df518c6-24dc-4875-acca-68bf53ff0b2e" />
 
-## Team 
-
-- Anna Ørbeck
-- Chuck Long Ching
-- Lucas Ahlnäs
-- Tindra Heurlin
-
 ## Introduction
 
 **Tombaugh Regio** is an immersive virtual‑reality experience where sound and visuals merge into a single interactive environment. The project invites users to explore original music through dynamic 3D elements, transforming listening into a spatial and sensory journey.
@@ -44,12 +37,11 @@ Access to the project's Figma board: <https://www.figma.com/board/VNWhUzGgp5skbM
 
 ### Features
 
-[_Features and functionalities of your project. You can use bullet points, screenshots, gifs, or videos to illustrate your points. Also include a link to a demo or a live version of your project._]
-
 - Immersive sphere room environment with a fully enclosed spatial experience
 - Detailed 3D models, including a pedestal and a globe representing Pluto
 - Interactive hand-tracking controls for natural interaction with objects
 - Accessible and user-friendly design, suitable for a wide range of users
+- Real-time audioreactive shader system driven by a custom DSP audio analysis system
 - Compatible with XR headsets, including devices like the Meta Quest 3
 
 Watch the demo video or try the live version.
@@ -58,9 +50,7 @@ Link: <https://extralitylab.dsv.su.se/project/det/>
 
 ## Installation
 
-[_Installation process to build and run your project. Use code blocks, tables, or lists to show the commands, steps, or requirements the chosen platform. Mention any dependencies or libraries that your project uses and how to install them._]
-
-To install and run [Tombaugh Regio] on your platform or device, follow the instructions below:
+To install and run **Tombaugh Regio** on your platform or device, follow the instructions below:
 
 | Platform | Device     | Requirements                        |     |
 | ----------| ------------| -------------------------------------| -----|
@@ -95,9 +85,31 @@ Tips:
 
 ## References
 
-Acknowledge here the sources, references, or inspirations that you used for your project. Give credit to the original authors or creators of the materials that you used or adapted for your project (3D models, source code, audio effects, etc.)
+### Materials
+#### Audio
+- Ambient sound: https://cdn.pixabay.com/download/audio/2022/03/09/audio_74197cd1b9.mp3?filename=freesound_community-space-rumble-29970.mp3
+- Music: Tombaugh Regio by Lucas Ahlnäs
 
+#### Textures
+- Texturelabs_Metal_136L.jpg https://texturelabs.org/textures/metal_136/
+- https://substance3d.adobe.com/community-assets
+- HDRI https://www.spacespheremaps.com/wp-content/uploads/HDR_multi_nebulae_1.hdr
+- Pluto: 
+  - https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia11/pia11707/PIA11707.tif
+  - https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Pluto_NewHorizons_Global_Mosaic_300m_Jul2017_8bit.tif
+  - https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Pluto_NewHorizons_Global_DEM_300m_Jul2017_16bit.tif
 
+#### Font
+- Orbit https://fonts.google.com/specimen/Orbit
+
+### Tools used
+- Unity
+- Blender
+- Autodesk Maya
+- Adobe Substance Painter
+- GIMP
+- Figma
+- ESP32
 
 Some of the code required for the audio-reactive system in this project proved to have a complexity level beyond the scope of the course during which this project was created. [Claude](https://claude.ai) by Anthropic was used as code help in these situations, and documentation of these processes was created in order to gain a surface level understanding and resources for further learning: [Audio Analyser](/docs/Audio%20Analyser%20Documentation%20(AI%20Generated)/Audio%20Analyser.md). Sources used:
 - Cooley, J.W. & Tukey, J.W. (1965). An algorithm for the machine calculation of complex Fourier series. _Mathematics of Computation, 19_(90), 297–301. https://doi.org/10.1090/S0025-5718-1965-0178586-1
@@ -106,4 +118,7 @@ Some of the code required for the audio-reactive system in this project proved t
 
 ## Contributors
 
-The authors of the project, contact information, and links to their websites or portfolios.
+- Anna Ørbeck
+- Chuck Long Ching
+- Lucas Ahlnäs
+- Tindra Heurlin
