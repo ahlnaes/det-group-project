@@ -82,12 +82,11 @@ To install and run [Your app] on your platform or device, follow the instruction
 | Platform | Device | Requirements | Commands |
 | -------- | ------ | ------------ | -------- |
 | Windows  | Meta Quest   | Unity 2022.3 or higher, Arduino | `git clone https://github.com/user/repo.git`<br>`cd project-xr`<br>`open MainScene.unity`<br>`Build and Run` |
-| Android  | Phone  | Android 19 or higher, ARCore 1.18 or higher | `git clone https://github.com/user/repo.git`<br>`cd solar-system-xr`<br>`open SolarSystemXR.unity`<br>`switch platform to Android`<br>`build and run` |
 
 You also need to install the following dependencies or libraries for your project:
 
-- Library A - a Unity plugin for building VR and AR experiences
-- Library B - a C# wrapper for speech recognition and synthesis
+- Meta XR All-in-One SDK - a Unity plugin for building VR and AR experiences
+- Library B - Sound plugin (Lucas skriv)
 
 ## Usage
 
