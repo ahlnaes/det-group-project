@@ -46,7 +46,9 @@ Tombaugh Regio demonstrates how VR can expand the boundaries of musical expressi
 
 ## Design Process
 
-The design of Tombaugh Regio was driven by a curiosity to explore new ways of experiencing music through immersive and interactive technology. Our process combined creative exploration with user-centered design. We moved iteratively between ideation, fast-prototyping, and testing.
+The design of Tombaugh Regio was driven by a curiosity to explore new ways of experiencing music through immersive and interactive technology. Our process combined creative exploration with user-centered design. We moved iteratively between ideation, fast-prototyping, and testing - most of this documented in Figma. 
+
+Access to the project's Figma board: <https://www.figma.com/board/VNWhUzGgp5skbM0sbQ9xRB/Project-Workspace?node-id=514-1382&t=VEsPPACkVEhxa9ll-1>
 
 **Brainstorming** 
 <img width="6817" height="5958" alt="image" src="https://github.com/user-attachments/assets/7182a5b5-29c6-4894-92ad-45e19ce1539c" />
