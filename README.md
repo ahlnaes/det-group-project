@@ -62,12 +62,11 @@ For example:
 
 [_Features and functionalities of your project. You can use bullet points, screenshots, gifs, or videos to illustrate your points. Also include a link to a demo or a live version of your project._]
 
-For example:
-
-- Immersive and realistic 3D models of [...]
-- Interactive and intuitive controls using hand gestures and voice commands
-- Customizable settings and preferences for the user experience
-- Compatible with various XR platforms and devices
+- Immersive sphere room environment with a fully enclosed spatial experience
+- Detailed 3D models, including a pedestal and a globe representing Pluto
+- Interactive hand-tracking controls for natural interaction with objects
+- Accessible and user-friendly design, suitable for a wide range of users
+- Compatible with XR headsets, including devices like the Meta Quest 3
 
 Watch the demo video or try the live version.
 
