@@ -3,7 +3,7 @@
 <img width="225.5" height="637" alt="Tombaugh Regio Poster" src="https://github.com/user-attachments/assets/4df518c6-24dc-4875-acca-68bf53ff0b2e" />
 
 ## Team
-- Anna Ørbeck
+
 - Chuck Long Ching
 - Lucas Ahlnäs
 - Tindra Heurlin
