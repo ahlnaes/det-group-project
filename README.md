@@ -81,7 +81,7 @@ To install and run [Your app] on your platform or device, follow the instruction
 
 | Platform | Device | Requirements | Commands |
 | -------- | ------ | ------------ | -------- |
-| Windows  | Meta Quest   | Unity 2022.3 or higher, Arduino | `git clone https://github.com/user/repo.git`<br>`cd project-xr`<br>`open MainScene.unity`<br>`Build and Run` |
+| Windows  | Meta Quest   | Unity 2022.3 or higher, Arduino | `git clone https://github.com/ahlnaes/det-group-project.git`<br>`cd project-unity`<br>`open MainScene.unity`<br>`Build and Run` |
 
 You also need to install the following dependencies or libraries for your project:
 
