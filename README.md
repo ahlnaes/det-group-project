@@ -77,11 +77,11 @@ Link: <https://extralitylab.dsv.su.se/>
 
 [_Installation process to build and run your project. Use code blocks, tables, or lists to show the commands, steps, or requirements the chosen platform. Mention any dependencies or libraries that your project uses and how to install them._]
 
-To install and run [Your app] on your platform or device, follow the instructions below:
+To install and run [Tombaugh Regio] on your platform or device, follow the instructions below:
 
 | Platform | Device | Requirements | Commands |
 | -------- | ------ | ------------ | -------- |
-| Windows  | Meta Quest   | Unity 2022.3 or higher, Arduino | `git clone https://github.com/ahlnaes/det-group-project.git`<br>`cd project-unity`<br>`open MainScene.unity`<br>`Build and Run` |
+| Android  | Meta Quest   | Unity 6000.3.0f1 or higher, Arduino | `git clone https://github.com/ahlnaes/det-group-project.git`<br>`cd project-unity`<br>`open MainScene.unity`<br>`Build and Run` |
 
 You also need to install the following dependencies or libraries for your project:
 
