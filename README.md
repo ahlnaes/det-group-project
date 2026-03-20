@@ -9,31 +9,6 @@
 - Lucas Ahlnäs
 - Tindra Heurlin
 
-## Project Structure
-
-```
-det-group-project/
-├── unity/           
-├── blender/        
-├── inspo/           
-├── docs/            
-└── README.md
-```
-## Prerequisites
-
-- Unity `<6000.3.0f1>`
-
-## Setup
-
-1. Clone the repository
-   ```bash
-   git clone https://github.com/ahlnaes/det-group-project.git
-   ```
-2. Open the `unity/` folder in Unity Hub
-
-## Documentation
-- [Audio Analyser](/docs/Audio%20Analyser%20Documentation%20(AI%20Generated)/Audio%20Analyser.md)
-
 ## Introduction
 
 **Tombaugh Regio** is an immersive virtual‑reality experience where sound and visuals merge into a single interactive environment. The project invites users to explore original music through dynamic 3D elements, transforming listening into a spatial and sensory journey.
@@ -87,14 +62,19 @@ Link: <https://extralitylab.dsv.su.se/project/det/>
 
 To install and run [Tombaugh Regio] on your platform or device, follow the instructions below:
 
-| Platform | Device | Requirements | Commands |
-| -------- | ------ | ------------ | -------- |
-| Android  | Meta Quest   | Unity 6000.3.0f1 or higher, Arduino | `git clone https://github.com/ahlnaes/det-group-project.git`<br>`cd project-unity`<br>`open MainScene.unity`<br>`Build and Run` |
+| Platform | Device     | Requirements                        |     |
+| ----------| ------------| -------------------------------------| -----|
+| Android  | Meta Quest | Unity 6000.3.0f1 or higher, Arduino |     |
+
+
+1. `git clone https://github.com/ahlnaes/det-group-project.git`
+2. Unity Hub -> Add project from disk -> `../det-group-project/unity/` -> Open project
+3. Open `MainScene.unity`
+4. `Build and Run`
 
 You also need to install the following dependencies or libraries for your project:
 
 - Meta XR All-in-One SDK - a Unity plugin for building VR and AR experiences
-- Library B - Sound plugin (Lucas skriv)
 
 ## Usage
 
@@ -116,6 +96,13 @@ Tips:
 ## References
 
 Acknowledge here the sources, references, or inspirations that you used for your project. Give credit to the original authors or creators of the materials that you used or adapted for your project (3D models, source code, audio effects, etc.)
+
+
+
+Some of the code required for the audio-reactive system in this project proved to have a complexity level beyond the scope of the course during which this project was created. [Claude](https://claude.ai) by Anthropic was used as code help in these situations, and documentation of these processes was created in order to gain a surface level understanding and resources for further learning: [Audio Analyser](/docs/Audio%20Analyser%20Documentation%20(AI%20Generated)/Audio%20Analyser.md). Sources used:
+- Cooley, J.W. & Tukey, J.W. (1965). An algorithm for the machine calculation of complex Fourier series. _Mathematics of Computation, 19_(90), 297–301. https://doi.org/10.1090/S0025-5718-1965-0178586-1
+- Harris, F.J. (1978). On the use of windows for harmonic analysis with the discrete Fourier transform. _Proceedings of the IEEE, 66_(1), 51–83. https://doi.org/10.1109/PROC.1978.10837
+- Bello, J.P. et al. (2005). A tutorial on onset detection in music signals. _IEEE Signal Processing Magazine, 22_(5), 23–41. https://doi.org/10.1109/MSP.2005.1511798
 
 ## Contributors
 
